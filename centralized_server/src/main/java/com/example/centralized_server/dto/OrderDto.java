@@ -8,7 +8,11 @@ import lombok.Data;
 @AllArgsConstructor
 public class OrderDto {
 
-    private Long userId;
+    private Long orderId;
+
+    private Boolean status;
+
+    private UserDto user;
 
     private MetaDataDto metaData;
 

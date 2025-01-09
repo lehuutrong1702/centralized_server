@@ -1,10 +1,14 @@
 package com.example.centralized_server.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 
 @Table(name = "orders")
 @Entity
+@Getter
+@Setter
 public class Order {
 
     @Id
@@ -13,7 +17,7 @@ public class Order {
     private Long id;
 
     @Column(nullable = false)
-    private boolean status;
+    private Boolean status;
 
     @ManyToOne()
     @JoinColumn(name = "user_id", nullable = false)

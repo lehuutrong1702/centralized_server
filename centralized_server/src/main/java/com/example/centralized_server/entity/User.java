@@ -16,7 +16,7 @@ public class User {
     @Column(nullable = false, name = "user_name")
     private String username;
 
-    @Column(nullable = false)
+    @Column(nullable = false,unique = true)
     private String address;
 
     @OneToMany(mappedBy = "user")

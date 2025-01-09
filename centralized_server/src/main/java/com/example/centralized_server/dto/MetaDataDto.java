@@ -26,7 +26,7 @@ public class MetaDataDto {
 
     private LocalDate copyrightRegistrationDate;
 
-    private boolean derivativeWork;
+    private Boolean derivativeWork;
 
     private String publicDisplayDistribution;
 
