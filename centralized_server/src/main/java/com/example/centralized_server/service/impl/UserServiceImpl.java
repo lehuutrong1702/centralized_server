@@ -18,12 +18,23 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void createUser(UserDto userDto) {
-       User user = UserMapper.mapToUser(new User(),userDto);
+       User user = new User();
+        user.setUsername(userDto.getUsername());
+        user.setAddress(userDto.getAddress());
+        user.setEmail(userDto.getEmail());
+        user.setPhone(userDto.getPhone());
+        user.setRole(userDto.getRole());
+        System.out.println(user.getEmail());
         Optional<User> optionalUser = userRepository.findByAddress(user.getAddress());
         if(optionalUser.isPresent()) {
             throw new ResourceAlreadyExistException(
                     "User has address" + user.getAddress() + " already exists");
         }
        userRepository.save(user);
+    }
+
+    @Override
+    public Boolean checkAddressExist(String address) {
+        return userRepository.existsByAddress(address);
     }
 }

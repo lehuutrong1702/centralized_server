@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/api/v1/users")
 @AllArgsConstructor
 public class UserController {
@@ -38,6 +39,7 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<ResponseDto> create(@RequestBody UserDto user){
+
         userService.createUser(user);
 
         return ResponseEntity.ok(new ResponseDto(
@@ -47,5 +49,8 @@ public class UserController {
     }
 
 
-
+    @GetMapping("/checkAddressExists")
+    public Boolean checkAddressExists(@RequestParam String address){
+        return userService.checkAddressExist(address);
+    }
 }

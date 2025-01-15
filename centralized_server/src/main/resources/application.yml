@@ -2,13 +2,13 @@ spring:
   application:
     name: "centralized_server"
   datasource:
-    url: jdbc:mysql://localhost:3307/thesis
+    url: jdbc:mysql://localhost:3306/thesis
     username: root
-    password: root
+    password: 30042003
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     show-sql: true
 #    database-platform: org.hibernate.dialect.MySQLDialect
 server:
-  port: 8080
+  port: 8081
