@@ -1,6 +1,7 @@
 package com.example.centralized_server.dto;
 
 
+import com.example.centralized_server.entity.Status;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -10,7 +11,7 @@ public class OrderDto {
 
     private Long orderId;
 
-    private Boolean status;
+    private Status status;
 
     private UserDto user;
 

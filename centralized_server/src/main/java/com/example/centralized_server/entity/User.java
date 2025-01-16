@@ -29,8 +29,14 @@ public class User {
     private String phone;
 
     @Column(nullable = false)
-    private String role;
+    private Role role;
+
+
+    @Column(nullable = false)
+    boolean isActive;
 
     @OneToMany(mappedBy = "user")
     private Set<Order> orders;
+
+
 }

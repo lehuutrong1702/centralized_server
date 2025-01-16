@@ -13,36 +13,11 @@ public class MetaData {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
-    private String title;
+    @Column(name = "application_form", nullable = false)
+    private String applicationForm;
 
-    @Column(nullable = false)
-    private String author;
-
-    @Column(name= "copyright_claimant", nullable = false)
-    private String copyrightClaimant;
-
-    @Column(name= "date_of_creation", nullable = false)
-    private LocalDate dateOfCreation;
-
-    @Column(name = "date_of_publication", nullable = false)
-    private LocalDate dateOfPublication;
-
-    @Column(name="work_type", nullable = false)
-    private String workType;
-
-    @Column(name = "copyright_registration_number",nullable = false)
-    private String copyrightRegistrationNumber;
-
-    @Column(name="copyright_registration_date", nullable = false)
-    private LocalDate copyrightRegistrationDate;
-
-    @Column(name="derivative_work",nullable = false)
-    private boolean derivativeWork;
-
-    @Column(name = "public_display_distribution",nullable = false)
-    private String publicDisplayDistribution;
-
+    @Column(name = "samples", nullable = false)
+    private String samples;
 
     @OneToOne
     @JoinColumn(name = "order_id", nullable = false)

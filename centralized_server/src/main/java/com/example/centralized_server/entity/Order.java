@@ -17,7 +17,7 @@ public class Order {
     private Long id;
 
     @Column(nullable = false)
-    private Boolean status;
+    private Status status;
 
     @ManyToOne()
     @JoinColumn(name = "user_id", nullable = false)

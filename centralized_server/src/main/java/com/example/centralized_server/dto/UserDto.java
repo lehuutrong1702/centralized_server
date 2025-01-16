@@ -1,5 +1,6 @@
 package com.example.centralized_server.dto;
 
+import com.example.centralized_server.entity.Role;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -10,5 +11,5 @@ public class UserDto {
     private String address;
     private String email;
     private String phone;
-    private String role;
+    private Role role;
 }

@@ -24,12 +24,14 @@ public class UserServiceImpl implements UserService {
         user.setEmail(userDto.getEmail());
         user.setPhone(userDto.getPhone());
         user.setRole(userDto.getRole());
+
         System.out.println(user.getEmail());
         Optional<User> optionalUser = userRepository.findByAddress(user.getAddress());
         if(optionalUser.isPresent()) {
             throw new ResourceAlreadyExistException(
                     "User has address" + user.getAddress() + " already exists");
         }
+        user.setActive(true);
        userRepository.save(user);
     }
 
