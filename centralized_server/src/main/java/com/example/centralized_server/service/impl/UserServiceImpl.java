@@ -7,6 +7,10 @@ import com.example.centralized_server.mapper.UserMapper;
 import com.example.centralized_server.repository.UserRepository;
 import com.example.centralized_server.service.UserService;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -16,23 +20,21 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
+
     @Override
     public void createUser(UserDto userDto) {
-       User user = new User();
-        user.setUsername(userDto.getUsername());
-        user.setAddress(userDto.getAddress());
-        user.setEmail(userDto.getEmail());
-        user.setPhone(userDto.getPhone());
-        user.setRole(userDto.getRole());
 
-        System.out.println(user.getEmail());
-        Optional<User> optionalUser = userRepository.findByAddress(user.getAddress());
-        if(optionalUser.isPresent()) {
-            throw new ResourceAlreadyExistException(
-                    "User has address" + user.getAddress() + " already exists");
-        }
-        user.setActive(true);
-       userRepository.save(user);
+    }
+
+    @Override
+    public UserDetailsService userDetailsService() {
+        return new UserDetailsService() {
+            @Override
+            public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+                return userRepository.findByEmail(username).orElseThrow(
+                        () -> new UsernameNotFoundException(username + "not found"));
+            }
+        };
     }
 
     @Override
