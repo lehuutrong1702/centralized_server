@@ -52,5 +52,5 @@ public class UserController {
     @GetMapping("/checkAddressExists")
     public Boolean checkAddressExists(@RequestParam String address){
         return userService.checkAddressExist(address);
-    }
+    }   
 }
