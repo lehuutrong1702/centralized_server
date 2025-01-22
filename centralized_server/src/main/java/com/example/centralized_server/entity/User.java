@@ -1,6 +1,5 @@
 package com.example.centralized_server.entity;
 
-
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,6 +7,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -31,18 +31,24 @@ public class User implements UserDetails {
     private String email;
 
     @Column(nullable = false)
-    private String phone;
-
-    @Column(nullable = false)
     private Role role;
 
+    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT false")
+    private Boolean isApprove;
 
     @Column(nullable = false)
-    boolean isActive;
+    private boolean isActive;
+
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createAt;
 
     @OneToMany(mappedBy = "user")
     private Set<Order> orders;
 
+    @PrePersist
+    protected void onCreate() {
+        this.createAt = LocalDateTime.now();
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -13,6 +13,9 @@ public class MetaData {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "name", nullable = false)
+    private String name;
+
     @Column(name = "application_form", nullable = false)
     private String applicationForm;
 

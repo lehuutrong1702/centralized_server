@@ -9,4 +9,6 @@ public interface AuthenticationService {
     void signup (UserDto signUpRequest);
 
     SignInResponse signIn(SignInRequest signinRequest);
+
+    Boolean checkAddressExist(String address);
 }

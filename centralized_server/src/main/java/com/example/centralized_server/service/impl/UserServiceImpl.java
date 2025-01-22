@@ -1,6 +1,7 @@
 package com.example.centralized_server.service.impl;
 
 import com.example.centralized_server.dto.UserDto;
+import com.example.centralized_server.entity.Role;
 import com.example.centralized_server.entity.User;
 import com.example.centralized_server.exception.ResourceAlreadyExistException;
 import com.example.centralized_server.mapper.UserMapper;
@@ -13,6 +14,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -23,7 +26,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void createUser(UserDto userDto) {
-
+        User user = new User();
+        user.setUsername(user.getUsername());
+        user.setEmail(userDto.getEmail());
+        user.setRole(userDto.getRole());
+        user.setCreateAt(LocalDateTime.now());
+        user.setIsApprove(false);
+        userRepository.save(user);
     }
 
     @Override
@@ -41,4 +50,32 @@ public class UserServiceImpl implements UserService {
     public Boolean checkAddressExist(String address) {
         return userRepository.existsByAddress(address);
     }
+
+    public List<User> getAccountsByRole(Role role) {
+        List<User> users = userRepository.findByRole(role);
+        return users;
+    }
+
+    public List<User> getAccountsByApprovalStatus(boolean isApprove) {
+        List<User> users = userRepository.findByIsApprove(isApprove);
+        return users;
+    }
+
+    public String getRoleByAddress(String address) {
+        User user = userRepository.findByAddress(address)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        return user.getRole().name();
+    }
+    public boolean isAccountApproved(String address) {
+        User user = userRepository.findByAddress(address)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        return Boolean.TRUE.equals(user.getIsApprove());
+    }
+    public void approveAccount(String address) {
+        User user = userRepository.findByAddress(address)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        user.setIsApprove(true);
+        userRepository.save(user);
+    }
+
 }

@@ -33,7 +33,7 @@ public class SecurityConfig{
         http.csrf(
                         AbstractHttpConfigurer::disable).authorizeHttpRequests(
                         request -> request.requestMatchers(
-                                        "/auth/signup","/auth/signin","/enterprises")
+                                        "/auth/signup","/auth/signin","/enterprises","/auth/checkAddressExists", "/api/v1/users/checkAddressExists", "/api/v1/users/{address}/is-approved")
                                 .permitAll().anyRequest().authenticated()
                 ) .sessionManagement(manager ->
                         manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
