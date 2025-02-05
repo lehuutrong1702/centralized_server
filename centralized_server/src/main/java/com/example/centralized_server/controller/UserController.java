@@ -57,6 +57,11 @@ public class UserController {
         List<User> users = userService.getAccountsByRole(role);
         return ResponseEntity.ok(users);
     }
+    @GetMapping("/approvals")
+    public ResponseEntity<List<User>> getAccountApprovals() {
+        List<User> users = userService.getAccountsByApprovalStatus(true);
+        return ResponseEntity.ok(users);
+    }
 
     @GetMapping("/pending-approvals")
     public ResponseEntity<List<User>> getPendingApprovals() {
@@ -74,6 +79,10 @@ public class UserController {
         return ResponseEntity.ok(isApproved);
     }
 
+    @PostMapping("/{address}/approved")
+    public void AccountApproved(@PathVariable String address) {
+        userService.approveAccount(address);
+    }
     @GetMapping("/checkAddressExists")
     public Boolean checkAddressExists(@RequestParam String address){
         return authenticationService.checkAddressExist(address);

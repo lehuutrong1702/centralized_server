@@ -3,20 +3,16 @@ package com.example.centralized_server.service.impl;
 import com.example.centralized_server.dto.UserDto;
 import com.example.centralized_server.entity.Role;
 import com.example.centralized_server.entity.User;
-import com.example.centralized_server.exception.ResourceAlreadyExistException;
-import com.example.centralized_server.mapper.UserMapper;
 import com.example.centralized_server.repository.UserRepository;
 import com.example.centralized_server.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @AllArgsConstructor

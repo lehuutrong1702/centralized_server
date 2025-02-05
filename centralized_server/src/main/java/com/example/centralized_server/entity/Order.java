@@ -23,6 +23,6 @@ public class Order {
     private User user;
 
 
-    @OneToOne(mappedBy = "order")
+    @OneToOne(mappedBy = "order",cascade = CascadeType.ALL)
     private MetaData metaData;
 }

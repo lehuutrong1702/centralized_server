@@ -1,22 +1,13 @@
 package com.example.centralized_server.mapper;
 
+
 import com.example.centralized_server.dto.UserDto;
 import com.example.centralized_server.entity.User;
+import org.mapstruct.Mapper;
 
-public class UserMapper {
-    public static User mapToUser(User user, UserDto userDto) {
-        user.setUsername(userDto.getUsername());
-        user.setAddress(userDto.getAddress());
-        user.setEmail(user.getEmail());
-        user.setRole(user.getRole());
-        return user;
-    }
+@Mapper(componentModel = "spring")
+public interface UserMapper {
+    User toUser(UserDto userDto);
 
-    public static UserDto mapToUserDto(User user,UserDto userDto) {
-        userDto.setUsername(user.getUsername());
-        userDto.setAddress(user.getAddress());
-        userDto.setEmail(user.getEmail());
-        userDto.setRole(user.getRole());
-        return  userDto;
-    }
+    UserDto toUserDTO(User user);
 }
