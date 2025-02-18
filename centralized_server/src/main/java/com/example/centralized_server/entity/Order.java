@@ -25,4 +25,7 @@ public class Order {
 
     @OneToOne(mappedBy = "order",cascade = CascadeType.ALL)
     private MetaData metaData;
+
+    @Column(name = "token_id", nullable = true)
+    private Long tokenId;
 }

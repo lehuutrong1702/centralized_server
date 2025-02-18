@@ -15,4 +15,6 @@ public class OrderDto {
 
     private MetaDataDto metaData;
 
+    private Long tokenId;
+
 }

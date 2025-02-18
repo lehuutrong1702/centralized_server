@@ -1,6 +1,7 @@
 package com.example.centralized_server.service;
 
 
+import com.example.centralized_server.dto.MetaDataDto;
 import com.example.centralized_server.dto.OrderDto;
 import com.example.centralized_server.dto.OrderRequest;
 import com.example.centralized_server.entity.Order;
@@ -17,4 +18,12 @@ public interface OrderService {
     OrderDto updateOrderStatus(Long id, Status status);
 
     OrderDto getByIdOrder(Long id);
+
+    OrderDto updateTokenId(Long id, Long tokenId);
+
+    OrderDto getByURI(String uri);
+
+    List<OrderDto> getOrdersByUserId(Long userId);
+
+    OrderDto updateMetaData(Long orderId, MetaDataDto metaDataDto);
 }

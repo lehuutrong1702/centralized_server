@@ -1,10 +1,10 @@
 package com.example.centralized_server.controller;
 
-import com.example.centralized_server.dto.OrderDto;
-import com.example.centralized_server.dto.OrderRequest;
+import com.example.centralized_server.dto.*;
 import com.example.centralized_server.entity.Order;
 import com.example.centralized_server.entity.Status;
 import com.example.centralized_server.service.OrderService;
+import com.example.centralized_server.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +18,7 @@ import java.util.List;
 public class OrderController {
 
     private final OrderService orderService;
-
+    private final UserService userService;
     @PostMapping
     public ResponseEntity<Void> createOrder(@RequestBody OrderRequest orderRequest) {
         orderService.createOrder(orderRequest);
@@ -37,21 +37,13 @@ public class OrderController {
         return ResponseEntity.ok(orders);
     }
 
-    @PostMapping("/updateStatus")
-    public ResponseEntity<OrderDto> updateStatus(@RequestParam Long id, @RequestBody Status status) {
+    @PostMapping("/updateStatus/{id}")
+    public ResponseEntity<OrderDto> updateStatus(@PathVariable Long id, @RequestBody StatusRequest status) {
         System.out.println("d");
-        OrderDto updatedOrder = orderService.updateOrderStatus(id, status);
+        OrderDto updatedOrder = orderService.updateOrderStatus(id, status.getStatus());
         return ResponseEntity.ok(updatedOrder);
     }
-    @GetMapping
-    public ResponseEntity<List<OrderDto>> getByStatus(@RequestParam Boolean status) {
-        return null ;
-    }
 
-    @PatchMapping("/{id}")
-    public ResponseEntity<OrderDto> update(@PathVariable Long id, @RequestBody OrderDto orderDto) {
-        return null ;
-    }
 
     @GetMapping("/{id}")
     public ResponseEntity<OrderDto> getId(@PathVariable Long id) {
@@ -59,8 +51,28 @@ public class OrderController {
         return ResponseEntity.ok(order);
     }
 
-//    @GetMapping
-//    public ResponseEntity<List<OrderDto>> getByAddress(@RequestParam String address) {
-//        return null ;
-//    }
+
+    @PatchMapping("/updateTokenId/{id}")
+    public ResponseEntity<OrderDto> updateTokenId(@PathVariable String id, @RequestParam String tokenId) {
+        OrderDto order = orderService.updateTokenId(Long.valueOf(id), Long.valueOf(tokenId));
+        return ResponseEntity.ok(order);
+    }
+
+    @GetMapping("/getOrderByUri")
+    public ResponseEntity<OrderDto> getOrderByUri(@RequestBody UriDTO uri) {
+        OrderDto order = orderService.getByURI(uri.getUri());
+        return ResponseEntity.ok(order);
+    }
+
+    @GetMapping("/getNftsByAddress/{address}")
+    public ResponseEntity<List<OrderDto>> getByUserId(@PathVariable String address) {
+        List<OrderDto> orderDtos = orderService.getAllOrdersByAddress(address);
+        return ResponseEntity.ok(orderDtos);
+    }
+
+    @PutMapping("/updateMetaData/{id}")
+    public ResponseEntity<OrderDto> updateMetaData(@PathVariable String id, @RequestBody MetaDataDto metaDataDto) {
+        OrderDto orderDto = orderService.updateMetaData(Long.valueOf(id), metaDataDto);
+        return ResponseEntity.ok(orderDto);
+    }
 }

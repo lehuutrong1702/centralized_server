@@ -1,5 +1,6 @@
 package com.example.centralized_server.service.impl;
 
+import com.example.centralized_server.dto.MetaDataDto;
 import com.example.centralized_server.dto.OrderDto;
 import com.example.centralized_server.dto.OrderRequest;
 import com.example.centralized_server.entity.MetaData;
@@ -7,6 +8,7 @@ import com.example.centralized_server.entity.Order;
 import com.example.centralized_server.entity.Status;
 import com.example.centralized_server.entity.User;
 import com.example.centralized_server.mapper.OrderMapper;
+import com.example.centralized_server.repository.MetaDataRepository;
 import com.example.centralized_server.repository.OrderRepository;
 import com.example.centralized_server.repository.UserRepository;
 import com.example.centralized_server.service.OrderService;
@@ -17,6 +19,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -24,6 +27,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
     private final OrderMapper orderMapper;
+    private final MetaDataRepository metaDataRepository;
 
     @Override
     public void createOrder(OrderRequest orderRequest) {
@@ -38,6 +42,7 @@ public class OrderServiceImpl implements OrderService {
 
         // Tạo MetaData từ OrderDto
         MetaData metaData = new MetaData();
+        metaData.setUri(orderRequest.getMetaData().getUri());
         metaData.setName(orderRequest.getMetaData().getName());
         metaData.setApplicationForm(orderRequest.getMetaData().getApplicationForm());
         metaData.setSamples(orderRequest.getMetaData().getSamples());
@@ -53,7 +58,12 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<OrderDto> getAllOrdersByAddress(String address) {
-        return List.of();
+        User user = userRepository.findByAddress(address)
+                .orElseThrow(() -> new RuntimeException("User not found"));;
+
+
+        List<Order> orders = orderRepository.findByUserId(user.getId());
+        return orders.stream().map(orderMapper::toOrderDTO).collect(Collectors.toList());
     }
 
     @Override
@@ -99,4 +109,47 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new RuntimeException("Order not found"));
         return orderMapper.toOrderDTO(order);
     }
+
+    @Override
+    public OrderDto updateTokenId(Long id, Long tokenId) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+
+        order.setTokenId(tokenId);
+        order = orderRepository.save(order);
+
+        return orderMapper.toOrderDTO(order);
+    }
+
+    @Override
+    public OrderDto getByURI(String uri) {
+        MetaData metaData = metaDataRepository.findByUri(uri)
+                .orElseThrow(() -> new RuntimeException("MetaData not found for URI: " + uri));
+        return orderMapper.toOrderDTO(metaData.getOrder());
+    }
+
+    @Override
+    public List<OrderDto> getOrdersByUserId(Long userId) {
+        List<Order> orders = orderRepository.findByUserId(userId);
+        return orders.stream().map(orderMapper::toOrderDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    public OrderDto updateMetaData(Long orderId, MetaDataDto metaDataDto) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+
+        MetaData metaData = order.getMetaData();
+        if (metaData == null) {
+            throw new RuntimeException("Metadata not found for this order");
+        }
+        metaData.setUri(metaDataDto.getUri());
+        metaData.setSamples(metaDataDto.getSamples());
+        metaData.setApplicationForm(metaDataDto.getApplicationForm());
+
+        metaDataRepository.save(metaData);
+
+        return orderMapper.toOrderDTO(order);
+    }
+
 }

@@ -3,10 +3,11 @@ package com.example.centralized_server.entity;
 
 
 public enum Status {
-    INACTIVE,
-    FILED,
+    UPLOADED,
+    PENDING,
+    INCOMPLETE,
     PUBLISHED,
-    REGISTERED,
-    EXPIRED,
+    APPROVED,
+    REJECTED,
 }
 
