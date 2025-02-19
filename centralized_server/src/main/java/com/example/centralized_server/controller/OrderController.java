@@ -24,23 +24,35 @@ public class OrderController {
         orderService.createOrder(orderRequest);
         return ResponseEntity.ok().build();
     }
+//
+//    @GetMapping()
+//    public ResponseEntity<List<OrderDto>> getAllCopyright() {
+//        List<OrderDto> orders = orderService.getAllOrders();
+//        return ResponseEntity.ok(orders);
+//    }
 
-    @GetMapping("/getAllCopyright")
-    public ResponseEntity<List<OrderDto>> getAllCopyright() {
-        List<OrderDto> orders = orderService.getAllOrders();
-        return ResponseEntity.ok(orders);
-    }
 
-    @GetMapping("/getCopyrightByStatus")
-    public ResponseEntity<List<OrderDto>> getCopyrightByStatus(@RequestParam Status status) {
+    @GetMapping()
+    public ResponseEntity<List<OrderDto>> getCopyrightByStatus(@RequestParam Status status,
+                                                               @RequestParam String uri
+                                                               ) {
         List<OrderDto> orders = orderService.getOrdersByStatus(status);
+
+        OrderDto order = orderService.getByURI(uri);
+
         return ResponseEntity.ok(orders);
     }
 
-    @PostMapping("/updateStatus/{id}")
-    public ResponseEntity<OrderDto> updateStatus(@PathVariable Long id, @RequestBody StatusRequest status) {
+    @PatchMapping()
+    public ResponseEntity<OrderDto> update(@RequestBody OrderDto orderDto) {
         System.out.println("d");
-        OrderDto updatedOrder = orderService.updateOrderStatus(id, status.getStatus());
+        OrderDto updatedOrder = null;
+        if(orderDto.getStatus() != null)
+            updatedOrder  = orderService.updateOrderStatus(orderDto.getId(), orderDto.getStatus());
+        if (orderDto.getMetaData() != null)
+            orderService.updateMetaData(orderDto.getId(), orderDto.getMetaData());
+        if(orderDto.getTokenId() != null)
+            orderService.updateTokenId(orderDto.getId(), orderDto.getTokenId());
         return ResponseEntity.ok(updatedOrder);
     }
 
@@ -52,27 +64,27 @@ public class OrderController {
     }
 
 
-    @PatchMapping("/updateTokenId/{id}")
-    public ResponseEntity<OrderDto> updateTokenId(@PathVariable String id, @RequestParam String tokenId) {
-        OrderDto order = orderService.updateTokenId(Long.valueOf(id), Long.valueOf(tokenId));
-        return ResponseEntity.ok(order);
-    }
+//    @PatchMapping("/updateTokenId/{id}")
+//    public ResponseEntity<OrderDto> updateTokenId(@PathVariable String id, @RequestParam String tokenId) {
+//        OrderDto order = orderService.updateTokenId(Long.valueOf(id), Long.valueOf(tokenId));
+//        return ResponseEntity.ok(order);
+//    }
 
-    @GetMapping("/getOrderByUri")
-    public ResponseEntity<OrderDto> getOrderByUri(@RequestBody UriDTO uri) {
-        OrderDto order = orderService.getByURI(uri.getUri());
-        return ResponseEntity.ok(order);
-    }
+//    @GetMapping("/getOrderByUri")
+//    public ResponseEntity<OrderDto> getOrderByUri(@RequestBody UriDTO uri) {
+//        OrderDto order = orderService.getByURI(uri.getUri());
+//        return ResponseEntity.ok(order);
+//    }
 
-    @GetMapping("/getNftsByAddress/{address}")
-    public ResponseEntity<List<OrderDto>> getByUserId(@PathVariable String address) {
-        List<OrderDto> orderDtos = orderService.getAllOrdersByAddress(address);
-        return ResponseEntity.ok(orderDtos);
-    }
+//    @GetMapping("/getNftsByAddress/{address}")
+//    public ResponseEntity<List<OrderDto>> getByUserId(@PathVariable String address) {
+//        List<OrderDto> orderDtos = orderService.getAllOrdersByAddress(address);
+//        return ResponseEntity.ok(orderDtos);
+//    }
 
-    @PutMapping("/updateMetaData/{id}")
-    public ResponseEntity<OrderDto> updateMetaData(@PathVariable String id, @RequestBody MetaDataDto metaDataDto) {
-        OrderDto orderDto = orderService.updateMetaData(Long.valueOf(id), metaDataDto);
-        return ResponseEntity.ok(orderDto);
-    }
+//    @PutMapping("/updateMetaData/{id}")
+//    public ResponseEntity<OrderDto> updateMetaData(@PathVariable String id, @RequestBody MetaDataDto metaDataDto) {
+//        OrderDto orderDto = orderService.updateMetaData(Long.valueOf(id), metaDataDto);
+//        return ResponseEntity.ok(orderDto);
+//    }
 }

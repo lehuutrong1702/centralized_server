@@ -52,11 +52,15 @@ public class UserController {
                 "Create user successfully"
         ));
     }
+
+
     @GetMapping("/role/{role}")
     public ResponseEntity<List<User>> getAccountsByRole(@PathVariable Role role) {
         List<User> users = userService.getAccountsByRole(role);
         return ResponseEntity.ok(users);
-    }
+    } // => use parameter instead
+
+
     @GetMapping("/approvals")
     public ResponseEntity<List<User>> getAccountApprovals() {
         List<User> users = userService.getAccountsByApprovalStatus(true);
@@ -67,22 +71,30 @@ public class UserController {
     public ResponseEntity<List<User>> getPendingApprovals() {
         List<User> users = userService.getAccountsByApprovalStatus(false);
         return ResponseEntity.ok(users);
-    }
+    } // => use parameter
+
+
     @GetMapping("/{address}/role")
     public ResponseEntity<String> getRoleByAddress(@PathVariable String address) {
         String role = userService.getRoleByAddress(address);
         return ResponseEntity.ok(role);
     }
+
+
     @GetMapping("/{address}/is-approved")
     public ResponseEntity<Boolean> isAccountApproved(@PathVariable String address) {
         boolean isApproved = userService.isAccountApproved(address);
         return ResponseEntity.ok(isApproved);
     }
 
+
     @PostMapping("/{address}/approved")
     public void AccountApproved(@PathVariable String address) {
         userService.approveAccount(address);
     }
+    // get by address => get all information
+
+
     @GetMapping("/checkAddressExists")
     public Boolean checkAddressExists(@RequestParam String address){
         return authenticationService.checkAddressExist(address);

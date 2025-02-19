@@ -67,16 +67,40 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderDto> getAllOrders() {
-        List<Order> orders = orderRepository.findAll();
-        List<OrderDto> orderDtos = new ArrayList<>();
+    public List<OrderDto> getAllOrders(Status status, String uri, String address) {
+        if (status == null && uri == null) {
+            List<Order> orders = orderRepository.findAll();
+            List<OrderDto> orderDtos = new ArrayList<>();
 
-        for (Order order : orders) {
-            OrderDto orderDto = orderMapper.toOrderDTO(order);
-            orderDtos.add(orderDto);
+            for (Order order : orders) {
+                OrderDto orderDto = orderMapper.toOrderDTO(order);
+                orderDtos.add(orderDto);
+            }
+            return orderDtos;
         }
 
-        return orderDtos;
+        if (uri != null) {
+            Optional<MetaData> metaData = metaDataRepository.findByUri(uri);
+            if (metaData.isPresent()) {
+                OrderDto orderDto =  orderMapper.toOrderDTO(metaData.get().getOrder());
+                return List.of(orderDto);
+            }
+        }
+
+
+        List<Order> orders = new ArrayList<>();
+        if (status == null && address == null) {
+            orders =  orderRepository.findAll(); // Trả về tất cả bản ghi nếu cả hai đều null
+        } else if (status == null) {
+         return getAllOrdersByAddress(address);
+        } else if (address == null) {
+            orders =  orderRepository.findByStatus(status);
+        } else {
+            orders = orderRepository.findByStatusAndUser_Address(status, address);
+        }
+
+        return orders.stream().map(orderMapper::toOrderDTO).collect(Collectors.toList());
+
     }
 
     @Override
@@ -151,5 +175,10 @@ public class OrderServiceImpl implements OrderService {
 
         return orderMapper.toOrderDTO(order);
     }
+
+//    public Order update(OrderDto orderDto){
+//        // get by id => order
+//
+//    } //
 
 }

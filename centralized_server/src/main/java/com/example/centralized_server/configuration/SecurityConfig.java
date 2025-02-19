@@ -32,14 +32,8 @@ public class SecurityConfig{
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(
                         AbstractHttpConfigurer::disable).authorizeHttpRequests(
-                        request -> request.requestMatchers(
-                                        "/auth/signup","/auth/signin","/enterprises","/auth/checkAddressExists","/api/v1/users/*","/api/v1/orders/*",
-                                        "/api/v1/users/checkAddressExists", "/api/v1/users/{address}/is-approved", "/api/v1/users/{address}",
-                                        "/api/v1/users/{address}/approved", "/api/v1/users/{address}/role", "/api/v1/users/*",
-                                        "/api/v1/users/approvals","/api/v1/users/pending-approvals", "/api/v1/orders/*", "/api/v1/orders","/api/v1/orders/updateStatus/{id}",
-                                        "/api/v1/orders/updateTokenId/{id}", "/api/v1/orders/getOrderByUri","/api/v1/notification/email/send", "/api/v1/orders/getNftsByAddress/{address}",
-                                        "/api/v1/orders/updateMetaData/{id}")
-                                .permitAll().anyRequest().authenticated()
+                        request -> request.anyRequest().permitAll()
+
                 ) .sessionManagement(manager ->
                         manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
