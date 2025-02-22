@@ -17,4 +17,5 @@ public class OrderDto {
 
     private Long tokenId;
 
+    private String verifyAddress;
 }

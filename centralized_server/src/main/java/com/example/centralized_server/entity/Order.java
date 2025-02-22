@@ -22,6 +22,7 @@ public class Order {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    private String verifyAddress;
 
     @OneToOne(mappedBy = "order",cascade = CascadeType.ALL)
     private MetaData metaData;

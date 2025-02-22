@@ -26,4 +26,6 @@ public interface OrderService {
     List<OrderDto> getOrdersByUserId(Long userId);
 
     OrderDto updateMetaData(Long orderId, MetaDataDto metaDataDto);
+
+    OrderDto update(OrderDto orderDto);
 }

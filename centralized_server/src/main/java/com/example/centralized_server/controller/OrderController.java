@@ -45,15 +45,9 @@ public class OrderController {
 
     @PatchMapping()
     public ResponseEntity<OrderDto> update(@RequestBody OrderDto orderDto) {
-        System.out.println("d");
-        OrderDto updatedOrder = null;
-        if(orderDto.getStatus() != null)
-            updatedOrder  = orderService.updateOrderStatus(orderDto.getId(), orderDto.getStatus());
-        if (orderDto.getMetaData() != null)
-            orderService.updateMetaData(orderDto.getId(), orderDto.getMetaData());
-        if(orderDto.getTokenId() != null)
-            orderService.updateTokenId(orderDto.getId(), orderDto.getTokenId());
-        return ResponseEntity.ok(updatedOrder);
+        OrderDto updateOrder = null;
+        updateOrder = orderService.update(orderDto);
+        return ResponseEntity.ok(updateOrder);
     }
 
 

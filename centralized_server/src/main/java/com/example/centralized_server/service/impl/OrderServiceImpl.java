@@ -59,7 +59,8 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<OrderDto> getAllOrdersByAddress(String address) {
         User user = userRepository.findByAddress(address)
-                .orElseThrow(() -> new RuntimeException("User not found"));;
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        ;
 
 
         List<Order> orders = orderRepository.findByUserId(user.getId());
@@ -82,7 +83,7 @@ public class OrderServiceImpl implements OrderService {
         if (uri != null) {
             Optional<MetaData> metaData = metaDataRepository.findByUri(uri);
             if (metaData.isPresent()) {
-                OrderDto orderDto =  orderMapper.toOrderDTO(metaData.get().getOrder());
+                OrderDto orderDto = orderMapper.toOrderDTO(metaData.get().getOrder());
                 return List.of(orderDto);
             }
         }
@@ -90,11 +91,11 @@ public class OrderServiceImpl implements OrderService {
 
         List<Order> orders = new ArrayList<>();
         if (status == null && address == null) {
-            orders =  orderRepository.findAll(); // Trả về tất cả bản ghi nếu cả hai đều null
+            orders = orderRepository.findAll(); // Trả về tất cả bản ghi nếu cả hai đều null
         } else if (status == null) {
-         return getAllOrdersByAddress(address);
+            return getAllOrdersByAddress(address);
         } else if (address == null) {
-            orders =  orderRepository.findByStatus(status);
+            orders = orderRepository.findByStatus(status);
         } else {
             orders = orderRepository.findByStatusAndUser_Address(status, address);
         }
@@ -176,9 +177,20 @@ public class OrderServiceImpl implements OrderService {
         return orderMapper.toOrderDTO(order);
     }
 
-//    public Order update(OrderDto orderDto){
-//        // get by id => order
-//
-//    } //
+    @Override
+    public OrderDto update(OrderDto orderDto) {
+        Optional<Order> optional = orderRepository.findById(orderDto.getId());
+        if (optional.isPresent()) {
+            Order order = optional.get();
+            if(orderDto.getVerifyAddress() != null)
+                orderMapper.updateOrderFromOrderDto(order,orderDto);
 
+            orderRepository.save(order);
+            return orderMapper.toOrderDTO(order);
+        } else {
+            throw new RuntimeException("Order not found");
+
+        } //
+
+    }
 }
