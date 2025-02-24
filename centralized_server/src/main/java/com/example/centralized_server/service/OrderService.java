@@ -13,7 +13,7 @@ public interface OrderService {
     void createOrder(OrderRequest orderRequest);
     List<OrderDto> getAllOrdersByAddress(String address);
 
-    List<OrderDto>  getAllOrders(Status status, String uri, String address  );
+    List<OrderDto>  getAllOrders(String search );
     List<OrderDto>  getOrdersByStatus(Status status);
     OrderDto updateOrderStatus(Long id, Status status);
 

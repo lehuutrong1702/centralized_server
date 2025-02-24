@@ -24,7 +24,7 @@ public class UserController {
     private final UserService userService;
     private AuthenticationService authenticationService;
     @GetMapping
-    public ResponseEntity<UserDto> getByAddress(@RequestParam String address){
+    public ResponseEntity<UserDto> getByAddress(@RequestParam(required = false) String address){
         return null;
     }
 

@@ -3,10 +3,11 @@ package com.example.centralized_server.repository;
 import com.example.centralized_server.entity.Order;
 import com.example.centralized_server.entity.Status;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import java.util.List;
 
-public interface OrderRepository extends JpaRepository<Order, Long> {
+public interface OrderRepository extends JpaRepository<Order, Long>, JpaSpecificationExecutor<Order> {
     List<Order> findByUserAddress(String address);
     List<Order> findByStatus(Status status);
     List<Order> findByUserId(Long userId);

@@ -30,17 +30,16 @@ public class OrderController {
 //        List<OrderDto> orders = orderService.getAllOrders();
 //        return ResponseEntity.ok(orders);
 //    }
+//
 
 
     @GetMapping()
-    public ResponseEntity<List<OrderDto>> getCopyrightByStatus(@RequestParam Status status,
-                                                               @RequestParam String uri
-                                                               ) {
-        List<OrderDto> orders = orderService.getOrdersByStatus(status);
+    public ResponseEntity<List<OrderDto>> search(
+            @RequestParam(value = "search") String search) {
 
-        OrderDto order = orderService.getByURI(uri);
 
-        return ResponseEntity.ok(orders);
+            return null;
+
     }
 
     @PatchMapping()
