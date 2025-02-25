@@ -15,4 +15,5 @@ public class OrderRequest {
     private String userAddress;
 
     private MetaDataDto metaData;
+    private String verifierAddress;
 }

@@ -35,10 +35,9 @@ public class OrderController {
 
     @GetMapping()
     public ResponseEntity<List<OrderDto>> search(
-            @RequestParam(value = "search") String search) {
-
-
-            return null;
+            @RequestParam(value = "search", required = false) String search) {
+            List<OrderDto> orderDtos = orderService.getAllOrders(search);
+            return ResponseEntity.ok(orderDtos);
 
     }
 

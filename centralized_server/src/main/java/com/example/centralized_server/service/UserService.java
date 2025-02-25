@@ -15,7 +15,7 @@ public interface UserService {
 
     Boolean checkAddressExist(String address);
 
-    List<User> getAccountsByRole(Role role);
+    List<User> getAccountsByRole(String role);
     List<User> getAccountsByApprovalStatus(boolean isApprove);
     String getRoleByAddress(String address);
     boolean isAccountApproved(String address);

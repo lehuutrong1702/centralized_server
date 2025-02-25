@@ -37,12 +37,13 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public void createOrder(OrderRequest orderRequest) {
         Optional<User> user = userRepository.findByAddress(orderRequest.getUserAddress());
-        System.out.println(orderRequest.getStatus());
+        Optional<User> verifier = userRepository.findByAddress(orderRequest.getVerifierAddress());
         // Chuyển đổi OrderDto thành Order
         Order order = new Order();
 
-        if (user.isPresent()) {
+        if (user.isPresent() && verifier.isPresent()) {
             order.setUser(user.get());
+            order.setVerifyAddress(verifier.get().getAddress());
         }
 
         // Tạo MetaData từ OrderDto
@@ -78,15 +79,20 @@ public class OrderServiceImpl implements OrderService {
             return orderRepository.findAll().stream().map(orderMapper::toOrderDTO).collect(Collectors.toList());
         }
 
-        Pattern pattern = Pattern.compile("(\\w+?)(:|<|>)(\\w+?),");
-        Matcher matcher = pattern.matcher(search + ",");
-        Specification<Order> spec = new OrderSpecification(
-                new SearchCriteria(matcher.group(1),
-                        matcher.group(2),
-                        matcher.group(3)));
+        Pattern pattern = Pattern.compile("(.*?)([<>:])(.*)");
+        Matcher matcher = pattern.matcher(search);
+        if(matcher.matches()){
+            Specification<Order> spec = new OrderSpecification(
+                    new SearchCriteria(matcher.group(1),
+                            matcher.group(2),
+                            matcher.group(3)));
+            return orderRepository.findAll(spec).stream().map(orderMapper::toOrderDTO).collect(Collectors.toList());
+        }
 
 
-        return orderRepository.findAll(spec).stream().map(orderMapper::toOrderDTO).collect(Collectors.toList());
+        return null;
+
+
 
 
 

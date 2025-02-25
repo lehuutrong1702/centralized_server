@@ -47,9 +47,14 @@ public class UserServiceImpl implements UserService {
         return userRepository.existsByAddress(address);
     }
 
-    public List<User> getAccountsByRole(Role role) {
-        List<User> users = userRepository.findByRole(role);
-        return users;
+    @Override
+    public List<User> getAccountsByRole(String role) {
+        try {
+            Role roleEnum = Role.valueOf(role.toUpperCase()); // Chuyển đổi String sang Enum
+            return userRepository.findByRole(roleEnum);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid role: " + role);
+        }
     }
 
     public List<User> getAccountsByApprovalStatus(boolean isApprove) {
