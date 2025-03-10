@@ -176,11 +176,11 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderDto update(OrderDto orderDto) {
+        System.out.println(orderDto.getStatus());
         Optional<Order> optional = orderRepository.findById(orderDto.getId());
         if (optional.isPresent()) {
             Order order = optional.get();
-            if(orderDto.getVerifyAddress() != null)
-                orderMapper.updateOrderFromOrderDto(order,orderDto);
+            orderMapper.updateOrderFromOrderDto(order,orderDto);
 
             orderRepository.save(order);
             return orderMapper.toOrderDTO(order);

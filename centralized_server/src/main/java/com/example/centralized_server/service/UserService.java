@@ -1,5 +1,6 @@
 package com.example.centralized_server.service;
 
+import com.example.centralized_server.dto.OrderDto;
 import com.example.centralized_server.dto.UserDto;
 import com.example.centralized_server.entity.Role;
 import com.example.centralized_server.entity.User;
@@ -20,4 +21,7 @@ public interface UserService {
     String getRoleByAddress(String address);
     boolean isAccountApproved(String address);
     void approveAccount(String address);
+    List<OrderDto> getOrder(String address);
+    User getUserByAddress(String address);
+    List<User> getAll();
 }

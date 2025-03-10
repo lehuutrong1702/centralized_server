@@ -8,6 +8,7 @@ public enum Status {
     INCOMPLETE,
     PUBLISHED,
     APPROVED,
+    PAID,
     REJECTED,
 }
 

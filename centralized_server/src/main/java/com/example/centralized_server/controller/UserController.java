@@ -23,21 +23,27 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
     private AuthenticationService authenticationService;
+
     @GetMapping
-    public ResponseEntity<UserDto> getByAddress(@RequestParam(required = false) String address){
-        return null;
+    public ResponseEntity<User> getByAddress(@RequestParam(required = false) String address){
+
+        return ResponseEntity.ok(userService.getUserByAddress(address));
     }
 
+    @GetMapping("/getAll")
+    public ResponseEntity<List<User>> getAll(){
 
+        return ResponseEntity.ok(userService.getAll());
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<UserDto> getById(@PathVariable Long id){
         return null;
     }
 
-    @GetMapping("/{id}/orders")
-    public ResponseEntity<List<OrderDto>> getOrders(@PathVariable Long id) {
-        return null;
+    @GetMapping("/{address}/orders")
+    public ResponseEntity<List<OrderDto>> getOrders(@PathVariable String address) {
+        return ResponseEntity.ok(userService.getOrder(address));
     }
 
 

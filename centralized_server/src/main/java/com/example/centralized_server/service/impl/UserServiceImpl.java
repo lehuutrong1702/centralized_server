@@ -1,8 +1,11 @@
 package com.example.centralized_server.service.impl;
 
+import com.example.centralized_server.dto.OrderDto;
 import com.example.centralized_server.dto.UserDto;
 import com.example.centralized_server.entity.Role;
 import com.example.centralized_server.entity.User;
+import com.example.centralized_server.mapper.OrderMapper;
+import com.example.centralized_server.mapper.UserMapper;
 import com.example.centralized_server.repository.UserRepository;
 import com.example.centralized_server.service.UserService;
 import lombok.AllArgsConstructor;
@@ -13,13 +16,15 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
-
-
+    private final OrderMapper orderMapper;
+    private final UserMapper userMapper;
     @Override
     public void createUser(UserDto userDto) {
         User user = new User();
@@ -79,4 +84,23 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
+    @Override
+    public List<OrderDto> getOrder(String address) {
+        User user = userRepository.findByAddress(address)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        return user.getOrders().stream().map(orderMapper::toOrderDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    public User getUserByAddress(String address) {
+        User user = userRepository.findByAddress(address)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        return user;
+    }
+
+    @Override
+    public List<User> getAll() {
+        List<User> users = userRepository.findAll();
+        return users;
+    }
 }

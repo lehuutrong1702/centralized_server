@@ -62,11 +62,11 @@ public class OrderController {
 //        return ResponseEntity.ok(order);
 //    }
 
-//    @GetMapping("/getOrderByUri")
-//    public ResponseEntity<OrderDto> getOrderByUri(@RequestBody UriDTO uri) {
-//        OrderDto order = orderService.getByURI(uri.getUri());
-//        return ResponseEntity.ok(order);
-//    }
+    @GetMapping("/getOrderByUri")
+    public ResponseEntity<OrderDto> getOrderByUri(@RequestParam String uri) {
+        OrderDto order = orderService.getByURI(uri);
+        return ResponseEntity.ok(order);
+    }
 
 //    @GetMapping("/getNftsByAddress/{address}")
 //    public ResponseEntity<List<OrderDto>> getByUserId(@PathVariable String address) {
