@@ -13,7 +13,7 @@ import com.example.centralized_server.repository.MetaDataRepository;
 import com.example.centralized_server.repository.OrderRepository;
 import com.example.centralized_server.repository.UserRepository;
 import com.example.centralized_server.service.OrderService;
-import com.example.centralized_server.utils.OrderSpecification;
+import com.example.centralized_server.utils.CustomSpecification;
 import lombok.AllArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -82,7 +82,7 @@ public class OrderServiceImpl implements OrderService {
         Pattern pattern = Pattern.compile("(.*?)([<>:])(.*)");
         Matcher matcher = pattern.matcher(search);
         if(matcher.matches()){
-            Specification<Order> spec = new OrderSpecification(
+            Specification<Order> spec = new CustomSpecification<Order>(
                     new SearchCriteria(matcher.group(1),
                             matcher.group(2),
                             matcher.group(3)));

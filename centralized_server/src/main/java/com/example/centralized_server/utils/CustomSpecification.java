@@ -14,12 +14,12 @@ import org.springframework.data.jpa.domain.Specification;
 @Builder
 @Setter
 @AllArgsConstructor
-public class OrderSpecification implements Specification<Order> {
+public class CustomSpecification<T> implements Specification<T> {
 
     private SearchCriteria criteria;
 
     @Override
-    public Predicate toPredicate(Root<Order> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
+    public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
         if (criteria.getOperation().equalsIgnoreCase(">")) {
             return builder.greaterThanOrEqualTo(
                     root.<String> get(criteria.getKey()), criteria.getValue().toString());
