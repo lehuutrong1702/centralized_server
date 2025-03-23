@@ -176,22 +176,31 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderDto update(OrderDto orderDto) {
-        System.out.println(orderDto.getStatus());
         Optional<Order> optional = orderRepository.findById(orderDto.getId());
         if (optional.isPresent()) {
             Order order = optional.get();
-            orderMapper.updateOrderFromOrderDto(order,orderDto);
+            if (orderDto.getUser() != null && orderDto.getUser().getId() != null) {
+                User user = userRepository.findById(orderDto.getUser().getId())
+                        .orElseThrow(() -> new RuntimeException("User not found"));
+                order.setUser(user);
+            }
+            orderMapper.updateOrderFromOrderDto(order, orderDto);
 
-            orderRepository.save(order);
-            return orderMapper.toOrderDTO(order);
+            Order order1 = orderRepository.save(order);
+
+            MetaData metaData = order1.getMetaData();
+
+            metaData.setUpdateAt(LocalDateTime.now());
+
+            order1.setMetaData(metaData);
+
+            orderRepository.save(order1);
+
+            return orderMapper.toOrderDTO(order1);
         } else {
             throw new RuntimeException("Order not found");
-
-        } //
-
+        }
     }
-
-
 
 }
 

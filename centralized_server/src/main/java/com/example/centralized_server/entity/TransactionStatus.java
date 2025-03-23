@@ -1,9 +1,11 @@
 package com.example.centralized_server.entity;
 
 public enum TransactionStatus {
-    INCOMPLETE,
+    REQUESTED,
+    PENDING,
+    PAYMENT_REQUIRED,
+    PAYMENT_COMPLETED,
     COMPLETED,
-    EXPIRED,
-    REJECTED,
-
+    CANCELLED_REQUIRED,
+    CANCELLED
 }

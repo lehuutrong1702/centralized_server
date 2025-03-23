@@ -1,16 +1,18 @@
 package com.example.centralized_server.service;
 
 import com.example.centralized_server.dto.TransactionDto;
+import com.example.centralized_server.dto.TransactionResponse;
 import com.example.centralized_server.entity.Transaction;
 
 import java.util.List;
 
 public interface TransactionService {
     TransactionDto createTransaction(TransactionDto transactionDto);
-    TransactionDto findByTransactionId(Long transactionId);
-    List<TransactionDto> findAllTransactions(String search);
+    TransactionResponse findByTransactionId(Long transactionId);
+    List<TransactionResponse> findAllTransactions(String search);
 
     TransactionDto updateTransaction(TransactionDto transactionDto);
-    void deleteTransaction(Long transactionId);
-
+    Boolean deleteTransaction(Long transactionId);
+    List<TransactionResponse> findTransactionsByVerifier(String address);
+    List<TransactionResponse> findTransactionsByAddressToUser(String address);
 }

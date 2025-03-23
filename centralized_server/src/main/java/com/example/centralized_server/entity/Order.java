@@ -24,6 +24,10 @@ public class Order {
 
     private String verifyAddress;
 
+    @Column(nullable = false) // Để tránh lỗi NULL
+    private Boolean isTransfer = false; // Đặt giá trị mặc định
+
+
     @OneToOne(mappedBy = "order",cascade = CascadeType.ALL)
     private MetaData metaData;
 
