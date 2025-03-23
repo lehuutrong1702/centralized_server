@@ -24,4 +24,5 @@ public interface UserService {
     List<OrderDto> getOrder(String address);
     User getUserByAddress(String address);
     List<User> getAll();
+
 }

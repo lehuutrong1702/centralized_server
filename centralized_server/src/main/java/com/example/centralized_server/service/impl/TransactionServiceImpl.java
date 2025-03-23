@@ -17,10 +17,10 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -32,6 +32,7 @@ public class TransactionServiceImpl implements TransactionService {
     private UserRepository userRepository;
     private OrderRepository orderRepository;
     private TransactionMapper transactionMapper;
+
     @Override
     public TransactionDto createTransaction(TransactionDto transactionDto) {
         Transaction transaction = new Transaction();
@@ -50,7 +51,7 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public TransactionResponse findByTransactionId(Long transactionId) {
         Optional<Transaction> transaction = transactionRepository.findById(transactionId);
-        if(transaction.isPresent()) {
+        if (transaction.isPresent()) {
             Optional<User> fromUser = userRepository.findById(transaction.get().getFromUserId());
             Optional<User> toUser = userRepository.findById(transaction.get().getToUserId());
             Optional<Order> order = orderRepository.findById(transaction.get().getOrderId());
@@ -87,6 +88,7 @@ public class TransactionServiceImpl implements TransactionService {
                                 matcher.group(2),
                                 matcher.group(3)));
                 transactions = transactionRepository.findAll(spec);
+
             } else {
                 return Collections.emptyList();
             }
@@ -120,7 +122,7 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public TransactionDto updateTransaction(TransactionDto transactionDto) {
         Optional<Transaction> transaction = transactionRepository.findById(transactionDto.getId());
-        if(transaction.isPresent()){
+        if (transaction.isPresent()) {
             Transaction trans = transaction.get();
             if (transactionDto.getPrice() == 0.0) {
                 transactionDto.setPrice(trans.getPrice());  // Đặt thành null để MapStruct bỏ qua
@@ -136,7 +138,7 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public Boolean deleteTransaction(Long transactionId) {
         Optional<Transaction> transaction = transactionRepository.findById(transactionId);
-        if(transaction.isPresent()){
+        if (transaction.isPresent()) {
             transactionRepository.delete(transaction.get());
             return true;
         }
@@ -147,11 +149,11 @@ public class TransactionServiceImpl implements TransactionService {
     public List<TransactionResponse> findTransactionsByVerifier(String address) {
         List<Transaction> transactions = transactionRepository.findByVerifyAddress(address);
         List<TransactionResponse> transactionResponses = new ArrayList<>();
-        for(Transaction transaction : transactions){
+        for (Transaction transaction : transactions) {
             Optional<User> fromUser = userRepository.findById(transaction.getFromUserId());
             Optional<User> toUser = userRepository.findById(transaction.getToUserId());
             Optional<Order> order = orderRepository.findById(transaction.getOrderId());
-            if(fromUser.isPresent() && toUser.isPresent() && order.isPresent()){
+            if (fromUser.isPresent() && toUser.isPresent() && order.isPresent()) {
                 TransactionResponse transactionResponse = new TransactionResponse(
                         transaction.getId(),
                         transaction.getOrderId(),
@@ -173,14 +175,14 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public List<TransactionResponse> findTransactionsByAddressToUser(String address) {
         Optional<User> toUser = userRepository.findByAddress(address);
-        if(toUser.isPresent()){
+        if (toUser.isPresent()) {
             List<Transaction> transactions = transactionRepository.findByToUserId(toUser.get().getId());
 
             List<TransactionResponse> transactionResponses = new ArrayList<>();
-            for(Transaction transaction : transactions){
+            for (Transaction transaction : transactions) {
                 Optional<User> fromUser = userRepository.findById(transaction.getFromUserId());
                 Optional<Order> order = orderRepository.findById(transaction.getOrderId());
-                if(fromUser.isPresent() && order.isPresent()){
+                if (fromUser.isPresent() && order.isPresent()) {
                     TransactionResponse transactionResponse = new TransactionResponse(
                             transaction.getId(),
                             transaction.getOrderId(),
@@ -201,5 +203,21 @@ public class TransactionServiceImpl implements TransactionService {
 
         return null;
 
+    }
+
+    @Override
+    public Long count(String search) {
+        Pattern pattern = Pattern.compile("(.*?)([<>:])(.*)");
+        Matcher matcher = pattern.matcher(search);
+        if (matcher.matches()) {
+            Specification<Transaction> spec = new CustomSpecification<>(
+                    new SearchCriteria(matcher.group(1),
+                            matcher.group(2),
+                            matcher.group(3)));
+            return transactionRepository.count(spec);
+
+        } else {
+            throw new RuntimeException("Search not found");
+        }
     }
 }

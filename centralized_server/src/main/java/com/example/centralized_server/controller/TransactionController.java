@@ -67,4 +67,9 @@ public class TransactionController {
         return ResponseEntity.ok(check);
     }
 
+
+    @GetMapping("/count")
+    public ResponseEntity<Long> count(String search) {
+        return ResponseEntity.ok(transactionService.count(search));
+    }
 }

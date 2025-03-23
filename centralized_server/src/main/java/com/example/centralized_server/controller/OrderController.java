@@ -79,4 +79,9 @@ public class OrderController {
 //        OrderDto orderDto = orderService.updateMetaData(Long.valueOf(id), metaDataDto);
 //        return ResponseEntity.ok(orderDto);
 //    }
+
+        @GetMapping("/count")
+        public ResponseEntity<Long> count(String search) {
+            return ResponseEntity.ok(orderService.count(search));
+        }
 }

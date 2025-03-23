@@ -28,4 +28,6 @@ public interface OrderService {
     OrderDto updateMetaData(Long orderId, MetaDataDto metaDataDto);
 
     OrderDto update(OrderDto orderDto);
+
+    Long count(String search);
 }

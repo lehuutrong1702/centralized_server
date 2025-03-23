@@ -202,6 +202,21 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
+    @Override
+    public Long count(String search) {
+        Pattern pattern = Pattern.compile("(.*?)([<>:])(.*)");
+        Matcher matcher = pattern.matcher(search);
+        if(matcher.matches()){
+            Specification<Order> spec = new CustomSpecification<Order>(
+                    new SearchCriteria(matcher.group(1),
+                            matcher.group(2),
+                            matcher.group(3)));
+            return orderRepository.count(spec);
+        } else {
+            throw new RuntimeException("Search not found");
+        }
+
+    }
 }
 
 
