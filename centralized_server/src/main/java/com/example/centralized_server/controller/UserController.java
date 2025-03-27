@@ -14,6 +14,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -106,5 +107,9 @@ public class UserController {
         return authenticationService.checkAddressExist(address);
     }
 
+    @GetMapping("/count")
+    public ResponseEntity<long[]> count() {
+        return ResponseEntity.ok(userService.getMonthlyUsersCount(LocalDateTime.now().getYear()));
 
+    }
 }

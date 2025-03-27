@@ -18,4 +18,5 @@ public interface TransactionService {
     List<TransactionResponse> findTransactionsByVerifier(String address);
     List<TransactionResponse> findTransactionsByAddressToUser(String address);
     Long count(String search);
+    public long[] getMonthlyTransactionsCount(int year);
 }

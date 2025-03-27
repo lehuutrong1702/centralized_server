@@ -26,6 +26,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static com.example.centralized_server.service.impl.TransactionServiceImpl.getLongs;
+
 @Service
 @AllArgsConstructor
 public class OrderServiceImpl implements OrderService {
@@ -97,7 +99,6 @@ public class OrderServiceImpl implements OrderService {
 
 
     }
-
 
 
 
@@ -216,6 +217,12 @@ public class OrderServiceImpl implements OrderService {
             throw new RuntimeException("Search not found");
         }
 
+    }
+
+    @Override
+    public long[] getMonthlyOrderCount(int year) {
+        List<Object[]> result = orderRepository.countOrdersPerMonth(year);
+        return getLongs(result);
     }
 }
 

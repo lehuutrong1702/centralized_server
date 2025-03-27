@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.example.centralized_server.service.impl.TransactionServiceImpl.getLongs;
+
 @Service
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -104,5 +106,9 @@ public class UserServiceImpl implements UserService {
         return users;
     }
 
-
+    @Override
+    public long[] getMonthlyUsersCount(int year) {
+        List<Object[]> result = userRepository.countUsersPerMonth((year));
+        return getLongs(result);
+    }
 }

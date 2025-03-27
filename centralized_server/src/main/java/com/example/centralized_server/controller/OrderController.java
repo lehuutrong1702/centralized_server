@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -35,7 +36,9 @@ public class OrderController {
 
     @GetMapping()
     public ResponseEntity<List<OrderDto>> search(
+
             @RequestParam(value = "search", required = false) String search) {
+        System.out.println(search);
             List<OrderDto> orderDtos = orderService.getAllOrders(search);
             return ResponseEntity.ok(orderDtos);
 
@@ -81,7 +84,8 @@ public class OrderController {
 //    }
 
         @GetMapping("/count")
-        public ResponseEntity<Long> count(String search) {
-            return ResponseEntity.ok(orderService.count(search));
+        public ResponseEntity<long[]> count() {
+            return ResponseEntity.ok(orderService.getMonthlyOrderCount(LocalDateTime.now().getYear()));
+
         }
 }

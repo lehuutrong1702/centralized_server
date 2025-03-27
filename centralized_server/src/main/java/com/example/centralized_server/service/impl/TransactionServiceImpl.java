@@ -64,8 +64,8 @@ public class TransactionServiceImpl implements TransactionService {
                         order.get().getMetaData().getName(),
                         transaction.get().getPrice(),
                         transaction.get().getStatus(),
-                        transaction.get().getCreateAt(),
-                        transaction.get().getUpdateAt()
+                        transaction.get().getCreatedAt(),
+                        transaction.get().getUpdatedAt()
                 );
                 return transactionResponse;
             }
@@ -109,8 +109,8 @@ public class TransactionServiceImpl implements TransactionService {
                         order.get().getMetaData().getName(),
                         transaction.getPrice(),
                         transaction.getStatus(),
-                        transaction.getCreateAt(),
-                        transaction.getUpdateAt()
+                        transaction.getCreatedAt(),
+                        transaction.getUpdatedAt()
                 );
                 transactionResponses.add(transactionResponse);
             }
@@ -162,8 +162,8 @@ public class TransactionServiceImpl implements TransactionService {
                         order.get().getMetaData().getName(),
                         transaction.getPrice(),
                         transaction.getStatus(),
-                        transaction.getCreateAt(),
-                        transaction.getUpdateAt()
+                        transaction.getCreatedAt(),
+                        transaction.getUpdatedAt()
                 );
                 transactionResponses.add(transactionResponse);
             }
@@ -191,8 +191,8 @@ public class TransactionServiceImpl implements TransactionService {
                             order.get().getMetaData().getName(),
                             transaction.getPrice(),
                             transaction.getStatus(),
-                            transaction.getCreateAt(),
-                            transaction.getUpdateAt()
+                            transaction.getCreatedAt(),
+                            transaction.getUpdatedAt()
                     );
                     transactionResponses.add(transactionResponse);
                 }
@@ -210,6 +210,10 @@ public class TransactionServiceImpl implements TransactionService {
         Pattern pattern = Pattern.compile("(.*?)([<>:])(.*)");
         Matcher matcher = pattern.matcher(search);
         if (matcher.matches()) {
+            String value = matcher.group(3);
+            if(matcher.group(1).equals("createAt")) {
+
+            }
             Specification<Transaction> spec = new CustomSpecification<>(
                     new SearchCriteria(matcher.group(1),
                             matcher.group(2),
@@ -219,5 +223,22 @@ public class TransactionServiceImpl implements TransactionService {
         } else {
             throw new RuntimeException("Search not found");
         }
+    }
+    @Override
+    public long[] getMonthlyTransactionsCount(int year) {
+        List<Object[]> result = transactionRepository.countTransactionsPerMonth((year));
+        return getLongs(result);
+    }
+
+    static long[] getLongs(List<Object[]> result) {
+        long[] transactionPerMonth = new long[12];
+
+        for (Object[] row : result) {
+            int month = (int) row[0];
+            long count = (long) row[1];
+            transactionPerMonth[month - 1] = count;
+        }
+
+        return transactionPerMonth;
     }
 }

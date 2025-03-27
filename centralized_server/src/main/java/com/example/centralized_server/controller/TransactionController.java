@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -69,7 +70,8 @@ public class TransactionController {
 
 
     @GetMapping("/count")
-    public ResponseEntity<Long> count(String search) {
-        return ResponseEntity.ok(transactionService.count(search));
+    public ResponseEntity<long[]> count() {
+        return ResponseEntity.ok(transactionService.getMonthlyTransactionsCount(LocalDateTime.now().getYear()));
+
     }
 }

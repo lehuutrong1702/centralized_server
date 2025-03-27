@@ -11,6 +11,8 @@ import lombok.Builder;
 import lombok.Setter;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.time.LocalDateTime;
+
 @Builder
 @Setter
 @AllArgsConstructor
@@ -20,7 +22,9 @@ public class CustomSpecification<T> implements Specification<T> {
 
     @Override
     public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
+
         if (criteria.getOperation().equalsIgnoreCase(">")) {
+
             return builder.greaterThanOrEqualTo(
                     root.<String> get(criteria.getKey()), criteria.getValue().toString());
         }
@@ -30,10 +34,15 @@ public class CustomSpecification<T> implements Specification<T> {
         }
         else if (criteria.getOperation().equalsIgnoreCase(":")) {
             if (root.get(criteria.getKey()).getJavaType() == String.class) {
+                System.out.println(root.get(criteria.getKey()).getJavaType());
                 return builder.like(
                         root.<String>get(criteria.getKey()), "%" + criteria.getValue() + "%");
             } else {
-                return builder.equal(root.get(criteria.getKey()), criteria.getValue());
+                    var value = criteria.getValue();
+                    if(root.get(criteria.getKey()).getJavaType() == LocalDateTime.class) {
+                    value = LocalDateTime.parse(value.toString());
+                }
+                return builder.equal(root.get(criteria.getKey()), value );
             }
         }
         return null;

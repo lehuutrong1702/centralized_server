@@ -30,4 +30,5 @@ public interface OrderService {
     OrderDto update(OrderDto orderDto);
 
     Long count(String search);
+    public long[] getMonthlyOrderCount(int year);
 }
