@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:latest
+    container_name: thesis
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: thesis
+    ports:
+      - "3307:3306"
+    restart: unless-stopped
