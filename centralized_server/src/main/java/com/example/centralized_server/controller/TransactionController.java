@@ -26,7 +26,7 @@ public class TransactionController {
     }
 
 
-    @GetMapping()
+    @GetMapping("/searchByAddress")
     public ResponseEntity<List<TransactionResponse>> searchByAddress(
             @RequestParam(value = "address", required = false) String address, @RequestParam(value = "isVerify", defaultValue = "true") Boolean isVerify) {
         List<TransactionResponse> transactionResponses;
@@ -40,13 +40,13 @@ public class TransactionController {
 
 
 
-//    @GetMapping()
-//    public ResponseEntity<List<TransactionResponse>> search(
-//            @RequestParam(value = "search", required = false) String search) {
-//        List<TransactionResponse> transactionResponses = transactionService.findAllTransactions(search);
-//        return ResponseEntity.ok(transactionResponses);
-//
-//    }
+    @GetMapping()
+    public ResponseEntity<List<TransactionResponse>> search(
+            @RequestParam(value = "search", required = false) String search) {
+        List<TransactionResponse> transactionResponses = transactionService.findAllTransactions(search);
+        return ResponseEntity.ok(transactionResponses);
+
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<TransactionResponse> searchById(

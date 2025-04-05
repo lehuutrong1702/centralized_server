@@ -4,6 +4,8 @@ import com.example.centralized_server.entity.TransactionStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Data
 @AllArgsConstructor
 public class TransactionDto {
@@ -20,5 +22,8 @@ public class TransactionDto {
     private double price;
 
     private TransactionStatus status;
+
+    private LocalDateTime createAt;
+    private LocalDateTime updateAt;
 
 }

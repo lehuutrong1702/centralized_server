@@ -54,7 +54,7 @@ public class OrderServiceImpl implements OrderService {
         metaData.setName(orderRequest.getMetaData().getName());
         metaData.setApplicationForm(orderRequest.getMetaData().getApplicationForm());
         metaData.setSamples(orderRequest.getMetaData().getSamples());
-        metaData.setCreateAt(LocalDateTime.now());
+
         metaData.setOrder(order);
 
         order.setMetaData(metaData);
@@ -224,6 +224,7 @@ public class OrderServiceImpl implements OrderService {
         List<Object[]> result = orderRepository.countOrdersPerMonth(year);
         return getLongs(result);
     }
+
 }
 
 

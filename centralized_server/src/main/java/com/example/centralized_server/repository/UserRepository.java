@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import javax.swing.text.html.Option;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,4 +21,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT MONTH(o.createAt), COUNT(o) FROM User o WHERE YEAR(o.createAt) = :year GROUP BY MONTH(o.createAt)")
     List<Object[]> countUsersPerMonth(@Param("year") int year);
+
+    @Query("SELECT COUNT(u) FROM User u WHERE u.createAt BETWEEN :startDate AND :endDate")
+    Long countUsersByWeek(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 }

@@ -14,6 +14,6 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long>,
     List<Transaction> findByVerifyAddress(String address);
     List<Transaction> findByToUserId(Long toUser);
 
-    @Query("SELECT MONTH(o.createdAt), COUNT(o) FROM Transaction o WHERE YEAR(o.createdAt) = :year GROUP BY MONTH(o.createdAt)")
+    @Query("SELECT MONTH(o.createAt), COUNT(o) FROM Transaction o WHERE YEAR(o.createAt) = :year GROUP BY MONTH(o.createAt)")
     List<Object[]> countTransactionsPerMonth(@Param("year") int year);
 }
