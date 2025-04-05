@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -36,12 +37,14 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public TransactionDto createTransaction(TransactionDto transactionDto) {
         Transaction transaction = new Transaction();
+        System.out.println(transaction.getFromUserId());
         transaction.setFromUserId(transactionDto.getFromUserId());
         transaction.setToUserId(transactionDto.getToUserId());
         transaction.setOrderId(transactionDto.getOrderId());
         transaction.setVerifyAddress(transactionDto.getVerifyAddress());
         transaction.setPrice(transactionDto.getPrice());
         transaction.setStatus(transactionDto.getStatus());
+        transaction.setCreateAt(LocalDateTime.now());
         transactionRepository.save(transaction);
 
         //
@@ -61,11 +64,12 @@ public class TransactionServiceImpl implements TransactionService {
                         transaction.get().getOrderId(),
                         fromUser.get().getAddress(),
                         toUser.get().getAddress(),
+                        order.get().getVerifyAddress(),
                         order.get().getMetaData().getName(),
                         transaction.get().getPrice(),
                         transaction.get().getStatus(),
-                        transaction.get().getCreatedAt(),
-                        transaction.get().getUpdatedAt()
+                        transaction.get().getCreateAt(),
+                        transaction.get().getUpdateAt()
                 );
                 return transactionResponse;
             }
@@ -106,11 +110,12 @@ public class TransactionServiceImpl implements TransactionService {
                         transaction.getOrderId(),
                         fromUser.get().getAddress(),
                         toUser.get().getAddress(),
+                        order.get().getVerifyAddress(),
                         order.get().getMetaData().getName(),
                         transaction.getPrice(),
                         transaction.getStatus(),
-                        transaction.getCreatedAt(),
-                        transaction.getUpdatedAt()
+                        transaction.getCreateAt(),
+                        transaction.getUpdateAt()
                 );
                 transactionResponses.add(transactionResponse);
             }
@@ -159,11 +164,12 @@ public class TransactionServiceImpl implements TransactionService {
                         transaction.getOrderId(),
                         fromUser.get().getAddress(),
                         toUser.get().getAddress(),
+                        order.get().getVerifyAddress(),
                         order.get().getMetaData().getName(),
                         transaction.getPrice(),
                         transaction.getStatus(),
-                        transaction.getCreatedAt(),
-                        transaction.getUpdatedAt()
+                        transaction.getCreateAt(),
+                        transaction.getUpdateAt()
                 );
                 transactionResponses.add(transactionResponse);
             }
@@ -177,7 +183,6 @@ public class TransactionServiceImpl implements TransactionService {
         Optional<User> toUser = userRepository.findByAddress(address);
         if (toUser.isPresent()) {
             List<Transaction> transactions = transactionRepository.findByToUserId(toUser.get().getId());
-
             List<TransactionResponse> transactionResponses = new ArrayList<>();
             for (Transaction transaction : transactions) {
                 Optional<User> fromUser = userRepository.findById(transaction.getFromUserId());
@@ -188,11 +193,12 @@ public class TransactionServiceImpl implements TransactionService {
                             transaction.getOrderId(),
                             fromUser.get().getAddress(),
                             toUser.get().getAddress(),
+                            order.get().getVerifyAddress(),
                             order.get().getMetaData().getName(),
                             transaction.getPrice(),
                             transaction.getStatus(),
-                            transaction.getCreatedAt(),
-                            transaction.getUpdatedAt()
+                            transaction.getCreateAt(),
+                            transaction.getUpdateAt()
                     );
                     transactionResponses.add(transactionResponse);
                 }

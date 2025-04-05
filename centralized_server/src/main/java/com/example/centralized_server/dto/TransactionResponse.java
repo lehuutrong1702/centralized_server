@@ -22,6 +22,8 @@ public class TransactionResponse {
 
     private String toUserAddress;
 
+    private String verifierAddress;
+
     private String title;
 
     private double price;
