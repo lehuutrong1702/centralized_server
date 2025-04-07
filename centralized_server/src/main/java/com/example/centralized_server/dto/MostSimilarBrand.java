@@ -10,5 +10,6 @@ import lombok.NoArgsConstructor;
 public class MostSimilarBrand {
     private String brand;
     private double score;
+    private long id;
 
 }

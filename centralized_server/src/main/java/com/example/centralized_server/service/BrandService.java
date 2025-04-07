@@ -5,6 +5,6 @@ import com.example.centralized_server.dto.MostSimilarBrand;
 
 public interface BrandService {
     BrandCheckResult checkBrand(String brand1, String brand2);
-    MostSimilarBrand checkMostSimilarBrand(String brand);
+    MostSimilarBrand checkMostSimilarBrand(long id);
 
 }

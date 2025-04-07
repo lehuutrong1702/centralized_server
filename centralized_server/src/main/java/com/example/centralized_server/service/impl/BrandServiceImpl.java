@@ -13,6 +13,7 @@ import org.apache.commons.text.*;
 import org.apache.commons.codec.*;
 import java.text.Normalizer;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -44,28 +45,38 @@ public class BrandServiceImpl implements BrandService {
     }
 
     @Override
-    public MostSimilarBrand checkMostSimilarBrand(String brand) {
+    public MostSimilarBrand checkMostSimilarBrand(long id) {
         try {
-            List<Order> orders = orderRepository.findAll();
+            Optional<Order> optionalOrder = orderRepository.findById(id);
 
-            String name = orders.get(0).getMetaData().getName();
-            double score = checkBrand(brand,name).getSimilarityScore();
-            MostSimilarBrand mostSimilarBrand = new MostSimilarBrand(
-                    name,
-                    score
-            );
+            if (optionalOrder.isEmpty()) {
+                return new MostSimilarBrand(); // Trả về rỗng nếu không tìm thấy
+            }
+
+            Order currentOrder = optionalOrder.get();
+            String currentName = currentOrder.getMetaData().getName();
+
+            List<Order> orders = orderRepository.findAll();
+            MostSimilarBrand mostSimilarBrand = new MostSimilarBrand("", 0.0, 0);
+
             for (Order order : orders) {
-                name = order.getMetaData().getName();
-                score = checkBrand(brand,name).getSimilarityScore();
-                if  (checkBrand(brand,name).getSimilarityScore() > mostSimilarBrand.getScore()) {
-                    mostSimilarBrand.setBrand(name);
-                    mostSimilarBrand.setScore(score);
+                if (order.getId() == id) continue; // Bỏ qua bản thân
+
+                String compareName = order.getMetaData().getName();
+                double similarity = checkBrand(currentName, compareName).getSimilarityScore();
+
+                if (similarity > mostSimilarBrand.getScore()) {
+                    mostSimilarBrand.setBrand(compareName);
+                    mostSimilarBrand.setScore(similarity);
+                    mostSimilarBrand.setId(order.getId());
                 }
             }
-            return mostSimilarBrand;
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
-        }
 
+            return mostSimilarBrand;
+
+        } catch (Exception e) {
+            throw new RuntimeException("Error checking most similar brand: " + e.getMessage(), e);
+        }
     }
+
 }
