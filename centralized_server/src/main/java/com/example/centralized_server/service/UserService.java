@@ -26,4 +26,10 @@ public interface UserService {
     List<User> getAll();
     public long[] getMonthlyUsersCount(int year);
 
+    List<User> getMemberByVerifier(String address);
+    List<User> getMember();
+
+    User getById(Long id);
+
+    void delete(Long id);
 }

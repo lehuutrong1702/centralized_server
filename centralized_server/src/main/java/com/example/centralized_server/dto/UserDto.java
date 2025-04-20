@@ -4,9 +4,6 @@ import com.example.centralized_server.entity.Role;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-
 @Data
 @AllArgsConstructor
 public class UserDto {
@@ -16,4 +13,6 @@ public class UserDto {
     private String email;
     private Role role;
     private Boolean isApprove;
+    private Boolean isStaff;
+    private Long idVerifier;  // Thay đổi kiểu từ String sang Long
 }

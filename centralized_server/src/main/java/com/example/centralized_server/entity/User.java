@@ -43,6 +43,12 @@ public class User implements UserDetails {
     @Column(nullable = false, updatable = false)
     private LocalDateTime createAt;
 
+    @Column(nullable = true)
+    private Long verifierId;
+
+    @Column(nullable = true)
+    private boolean isStaff;
+
     @OneToMany(mappedBy = "user")
     @JsonIgnore
     private Set<Order> orders;

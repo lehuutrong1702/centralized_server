@@ -18,10 +18,15 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
     List<User> findByRole(Role role);
     List<User> findByIsApprove(boolean isApprove);
-
+    List<User> findByVerifierId(Long verifierId);
+    List<User> findByIsStaffTrue();
     @Query("SELECT MONTH(o.createAt), COUNT(o) FROM User o WHERE YEAR(o.createAt) = :year GROUP BY MONTH(o.createAt)")
     List<Object[]> countUsersPerMonth(@Param("year") int year);
 
     @Query("SELECT COUNT(u) FROM User u WHERE u.createAt BETWEEN :startDate AND :endDate")
     Long countUsersByWeek(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+
+    @Query("SELECT COUNT(u) FROM User u WHERE u.verifierId = :verifierId")
+    Long countByVerifierId(@Param("verifierId") Long verifierId);
+
 }

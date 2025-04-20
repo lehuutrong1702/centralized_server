@@ -44,6 +44,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new ResourceAlreadyExistException(
                     "User has address" + user.getAddress() + " already exists");
         }
+        if(userDto.getIdVerifier() != null){
+            user.setVerifierId(userDto.getIdVerifier());
+            user.setStaff(true);
+        }
         user.setActive(true);
         userRepository.save(user);
     }

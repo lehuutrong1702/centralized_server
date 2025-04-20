@@ -19,6 +19,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.text.Normalizer;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -87,17 +88,17 @@ public class BrandServiceImpl implements BrandService {
         }
     }
 
-    public MostSimilarLogo checkMostSimilarLogo(String baseImageUrl, String[] imageUrls) {
-        BufferedImage baseImage = null;
+    public MostSimilarLogo checkMostSimilarLogo(String baseImageUrl, String[] imageUrls, Long[] ids) {
+        BufferedImage baseImage;
 
         try {
             baseImage = ImageIO.read(new URL(baseImageUrl));
         } catch (Exception e) {
-            throw new RuntimeException("Cannot download base Image: " + baseImageUrl, e);
+            throw new RuntimeException("Cannot download base image: " + baseImageUrl, e);
         }
 
         if (baseImage == null) {
-            throw new RuntimeException("base Image is null: " + baseImageUrl);
+            throw new RuntimeException("Base image is null: " + baseImageUrl);
         }
 
         AverageHash hasher = new AverageHash(64);
@@ -105,35 +106,59 @@ public class BrandServiceImpl implements BrandService {
 
         double minDistance = Double.MAX_VALUE;
         String mostSimilarImageUrl = null;
+        Long mostSimilarId = null;
 
-        for (String url : imageUrls) {
+        for (int i = 0; i < imageUrls.length; i++) {
             try {
-                BufferedImage img = ImageIO.read(new URL(url));
-                if (img == null) {
-                    System.out.println("Image cannot read:  " + url);
-                    continue;
-                }
+                BufferedImage img = ImageIO.read(new URL(imageUrls[i]));
+                if (img == null) continue;
 
                 Hash hash = hasher.hash(img);
                 double distance = baseHash.normalizedHammingDistance(hash);
 
                 if (distance < minDistance) {
                     minDistance = distance;
-                    mostSimilarImageUrl = url;
+                    mostSimilarImageUrl = imageUrls[i];
+                    mostSimilarId = ids[i];
                 }
 
             } catch (Exception e) {
-                System.out.println("Handling Image Error: " + url + " → " + e.getMessage());
+                System.out.println("Error handling image: " + imageUrls[i]);
             }
         }
 
         if (mostSimilarImageUrl != null) {
-            double similarityRate = 1 - minDistance;
-            return new MostSimilarLogo(mostSimilarImageUrl, similarityRate);
+            return new MostSimilarLogo(mostSimilarId, mostSimilarImageUrl, 1 - minDistance);
         } else {
-            throw new RuntimeException("No valid image");
+            throw new RuntimeException("No valid image found");
         }
     }
+
+
+    @Override
+    public MostSimilarLogo checkMostSimilarLogoID(long id) {
+        Optional<Order> order = orderRepository.findById(id);
+        if (order.isEmpty()) {
+            throw new RuntimeException("Order not found with id: " + id);
+        }
+
+        String baseSample = order.get().getMetaData().getSamples();
+        List<Order> orders = orderRepository.findAll();
+
+        List<String> samples = new ArrayList<>();
+        List<Long> ids = new ArrayList<>();
+
+        for (Order o : orders) {
+            if (o.getId() != id && o.getMetaData() != null && o.getMetaData().getSamples() != null) {
+                samples.add(o.getMetaData().getSamples());
+                ids.add(o.getId());
+            }
+        }
+
+        return checkMostSimilarLogo(baseSample, samples.toArray(new String[0]), ids.toArray(new Long[0]));
+    }
+
+
 
 
 }

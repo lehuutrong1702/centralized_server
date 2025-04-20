@@ -7,5 +7,6 @@ import com.example.centralized_server.dto.MostSimilarLogo;
 public interface BrandService {
     BrandCheckResult checkBrand(String brand1, String brand2);
     MostSimilarBrand checkMostSimilarBrand(long id);
-    MostSimilarLogo checkMostSimilarLogo(String baseImageUrl, String[] imagesUrls);
+    MostSimilarLogo checkMostSimilarLogo(String baseImageUrl, String[] imagesUrls, Long[] ids);
+    MostSimilarLogo checkMostSimilarLogoID(long id);
 }

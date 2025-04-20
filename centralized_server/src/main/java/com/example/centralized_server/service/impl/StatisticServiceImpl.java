@@ -1,9 +1,10 @@
 package com.example.centralized_server.service.impl;
 
+import com.example.centralized_server.dto.OrderDto;
 import com.example.centralized_server.dto.SearchCriteria;
 import com.example.centralized_server.dto.StatisticDto;
-import com.example.centralized_server.entity.Role;
-import com.example.centralized_server.entity.Transaction;
+import com.example.centralized_server.entity.*;
+import com.example.centralized_server.mapper.OrderMapper;
 import com.example.centralized_server.repository.OrderRepository;
 import com.example.centralized_server.repository.TransactionRepository;
 import com.example.centralized_server.repository.UserRepository;
@@ -12,6 +13,9 @@ import com.example.centralized_server.service.TransactionService;
 import com.example.centralized_server.utils.CustomSpecification;
 import lombok.AllArgsConstructor;
 import org.hibernate.stat.Statistics;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +25,7 @@ import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -28,7 +33,7 @@ public class StatisticServiceImpl implements StatisticService {
     private UserRepository userRepository;
     private TransactionRepository transactionRepository;
     private OrderRepository orderRepository;
-
+    private final OrderMapper orderMapper;
     @Override
     public StatisticDto getStatistics() {
             Long userCount = userRepository.count();
@@ -131,4 +136,38 @@ public class StatisticServiceImpl implements StatisticService {
         return stats;
     }
 
+    @Override
+    public long countOrderByVerifier(String verifyAddress) {
+        return orderRepository.countOrdersByVerifier(verifyAddress);
+    }
+
+    @Override
+    public long countMemberByVerifier(String verifyAddress) {
+        Optional<User> verifier = userRepository.findByAddress(verifyAddress);
+        if (verifier.isEmpty()) {
+            return 0;
+        }
+        Long verifierId = verifier.get().getId();
+        return userRepository.countByVerifierId(verifierId);
+    }
+
+
+    @Override
+    public long countCopyrightPublishedByVerifier(String verifyAddress) {
+        return orderRepository.countPublishedOrdersByVerifier(verifyAddress, Status.PUBLISHED);
+
+    }
+
+
+    @Override
+    public List<OrderDto> getFiveOrderNewest(String verifyAddress) {
+        Pageable topFive = PageRequest.of(0, 5);
+        List<Order> orders = orderRepository.findTop5ByVerifyAddress(verifyAddress, topFive);
+        List<OrderDto> result = new ArrayList<>();
+        for(Order o : orders){
+            OrderDto orderDto = orderMapper.toOrderDTO(o);
+            result.add(orderDto);
+        }
+        return result;
+    }
 }

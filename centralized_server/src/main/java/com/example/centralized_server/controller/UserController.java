@@ -38,9 +38,16 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserDto> getById(@PathVariable Long id){
-        return null;
+    public ResponseEntity<User> getById(@PathVariable String id){
+        return ResponseEntity.ok(userService.getById(Long.valueOf(id)));
     }
+
+    @PostMapping("/delete/{id}")
+    public ResponseEntity<Void> delete(@PathVariable String id) {
+        userService.delete(Long.valueOf(id));
+        return ResponseEntity.ok().build();
+    }
+
 
     @GetMapping("/{address}/orders")
     public ResponseEntity<List<OrderDto>> getOrders(@PathVariable String address) {
@@ -51,7 +58,7 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<ResponseDto> create(@RequestBody UserDto user){
-        System.out.println(user.getEmail());
+        System.out.println(user.getIdVerifier());
         userService.createUser(user);
 
         return ResponseEntity.ok(new ResponseDto(
@@ -111,5 +118,17 @@ public class UserController {
     public ResponseEntity<long[]> count() {
         return ResponseEntity.ok(userService.getMonthlyUsersCount(LocalDateTime.now().getYear()));
 
+    }
+
+    @GetMapping("/member")
+    public ResponseEntity<List<User>> getAccountMemberByVerifierID(@RequestParam String address) {
+        List<User> users = userService.getMemberByVerifier(address);
+        return ResponseEntity.ok(users);
+    }
+
+    @GetMapping("/member-all")
+    public ResponseEntity<List<User>> getAccountMemberAll() {
+        List<User> users = userService.getMember();
+        return ResponseEntity.ok(users);
     }
 }

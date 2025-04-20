@@ -1,5 +1,6 @@
 package com.example.centralized_server.controller;
 
+import com.example.centralized_server.dto.OrderDto;
 import com.example.centralized_server.dto.StatisticDto;
 import com.example.centralized_server.service.StatisticService;
 import lombok.AllArgsConstructor;
@@ -70,4 +71,27 @@ public class StatisticController {
     public Map<String, Map<String, Long>> getUserAndOrderCountByWeek() {
         return statisticService.getUsersAndOrdersByWeek();
     }
+    
+
+    @GetMapping("/count-member")
+    public ResponseEntity<Long> getNumberMember(@RequestParam String verifyAddress) {
+        return ResponseEntity.ok(statisticService.countMemberByVerifier(verifyAddress));
+    }
+
+    @GetMapping("/count-copyright-published")
+    public ResponseEntity<Long> getCopyrightPublished(@RequestParam String verifyAddress) {
+        return ResponseEntity.ok(statisticService.countCopyrightPublishedByVerifier(verifyAddress));
+    }
+
+    @GetMapping("/top-five-newest-copyright")
+    public ResponseEntity<List<OrderDto>> getFiveCopyrights(@RequestParam String verifyAddress) {
+        return ResponseEntity.ok(statisticService.getFiveOrderNewest(verifyAddress));
+    }
+
+    @GetMapping("/count-copyright")
+    public ResponseEntity<Long> getCountAllCopyright(@RequestParam String verifyAddress) {
+        return ResponseEntity.ok(statisticService.countOrderByVerifier(verifyAddress));
+    }
+
+
 }

@@ -24,12 +24,10 @@ public class BrandController {
         return ResponseEntity.ok(brandService.checkMostSimilarBrand(Long.parseLong(id)));
     }
 
-    @PostMapping("/mostSimilarLogo")
+    @GetMapping("/mostSimilarLogo")
     public ResponseEntity<MostSimilarLogo> getMostSimilarLogo(
-            @RequestBody MostSimilarLogoRequest mostSimilarLogoRequest) {
+            @RequestParam String id) {
         return ResponseEntity.ok(
-                brandService.checkMostSimilarLogo(
-                        mostSimilarLogoRequest.getBaseImage(),
-                        mostSimilarLogoRequest.getImages()));
+                brandService.checkMostSimilarLogoID(Long.parseLong(id)));
     }
 }

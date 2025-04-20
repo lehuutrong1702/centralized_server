@@ -29,12 +29,17 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     @Override
     public void createUser(UserDto userDto) {
+        System.out.println(userDto.getIdVerifier());
         User user = new User();
         user.setUsername(user.getUsername());
         user.setEmail(userDto.getEmail());
         user.setRole(userDto.getRole());
         user.setCreateAt(LocalDateTime.now());
         user.setIsApprove(false);
+        if(userDto.getIdVerifier() != null){
+            user.setVerifierId(userDto.getIdVerifier());
+            user.setStaff(true);
+        }
         userRepository.save(user);
     }
 
@@ -111,4 +116,30 @@ public class UserServiceImpl implements UserService {
         List<Object[]> result = userRepository.countUsersPerMonth((year));
         return getLongs(result);
     }
+
+    @Override
+    public List<User> getMemberByVerifier(String address) {
+        Optional<User> user = userRepository.findByAddress(address);
+        if(user.isPresent()){
+            return userRepository.findByVerifierId(user.get().getId());
+        }
+        return List.of();
+    }
+
+    @Override
+    public List<User> getMember() {
+        return userRepository.findByIsStaffTrue();
+    }
+
+    @Override
+    public User getById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+    }
+
+    @Override
+    public void delete(Long id) {
+        userRepository.deleteById(id);
+    }
+
 }

@@ -1,5 +1,6 @@
 package com.example.centralized_server.service;
 
+import com.example.centralized_server.dto.OrderDto;
 import com.example.centralized_server.dto.StatisticDto;
 
 import java.util.List;
@@ -23,4 +24,9 @@ public interface StatisticService {
 
     Map<String, Long> countUsersByRole();
     Map<String, Map<String, Long>> getUsersAndOrdersByWeek();
+
+    long countOrderByVerifier(String verifyAddress);
+    long countMemberByVerifier(String verifyAddress);
+    long countCopyrightPublishedByVerifier(String verifyAddress);
+    List<OrderDto> getFiveOrderNewest(String verifyAddress);
 }
