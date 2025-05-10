@@ -8,9 +8,12 @@ import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.springframework.stereotype.Component;
 
 import javax.swing.*;
 
+
+@Component
 @Mapper(componentModel = "spring")
 public interface TransactionMapper {
     Transaction toTransaction(TransactionDto transactionDto);

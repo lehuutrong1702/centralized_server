@@ -8,5 +8,5 @@ services:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: thesis
     ports:
-      - "3307:3306"
+      - "3306:3306"
     restart: unless-stopped
