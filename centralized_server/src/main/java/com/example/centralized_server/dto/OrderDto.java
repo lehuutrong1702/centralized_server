@@ -5,6 +5,8 @@ import com.example.centralized_server.entity.Status;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Data
 @AllArgsConstructor
 public class OrderDto {
@@ -20,4 +22,6 @@ public class OrderDto {
     private Boolean isTransfer;
 
     private String verifyAddress;
+
+    private BigDecimal gasFee;
 }

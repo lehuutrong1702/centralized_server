@@ -14,10 +14,17 @@ import com.example.centralized_server.repository.OrderRepository;
 import com.example.centralized_server.repository.UserRepository;
 import com.example.centralized_server.service.OrderService;
 import com.example.centralized_server.utils.CustomSpecification;
+import com.example.centralized_server.utils.DateTimeConverter;
+import org.springframework.data.domain.Page;
+
+import com.google.type.DateTime;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -68,7 +75,7 @@ public class OrderServiceImpl implements OrderService {
     public List<OrderDto> getAllOrdersByAddress(String address) {
         User user = userRepository.findByAddress(address)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        ;
+
 
 
         List<Order> orders = orderRepository.findByUserId(user.getId());
@@ -103,17 +110,26 @@ public class OrderServiceImpl implements OrderService {
 
 
     @Override
-    public List<OrderDto> getOrdersByStatus(Status status) {
+    public List<OrderDto> getOrdersByStatus(Status status, String name, LocalDateTime startDate, LocalDateTime endDate, String verifierAddress) {
         List<Order> orders = orderRepository.findByStatus(status);
         List<OrderDto> orderDtos = new ArrayList<>();
 
         for (Order order : orders) {
-            OrderDto orderDto = orderMapper.toOrderDTO(order);
-            orderDtos.add(orderDto);
+            boolean matchesName = (name == null || name.isBlank()) || order.getMetaData().getName().toLowerCase().contains(name.toLowerCase());
+            boolean matchesDate = (startDate == null || !order.getMetaData().getCreateAt().isBefore(startDate)) &&
+                    (endDate == null || !order.getMetaData().getCreateAt().isAfter(endDate));
+            boolean matchesAddress = (verifierAddress == null || verifierAddress.isBlank())
+                    || (order.getVerifyAddress() != null && order.getVerifyAddress().toLowerCase().contains(verifierAddress.toLowerCase()));
+
+            if (matchesName && matchesDate && matchesAddress) {
+                OrderDto orderDto = orderMapper.toOrderDTO(order);
+                orderDtos.add(orderDto);
+            }
         }
 
         return orderDtos;
     }
+
 
     @Override
     public OrderDto updateOrderStatus(Long id, Status status) {
@@ -185,6 +201,15 @@ public class OrderServiceImpl implements OrderService {
                         .orElseThrow(() -> new RuntimeException("User not found"));
                 order.setUser(user);
             }
+
+
+            if(order.getGasFee() != null && orderDto.getGasFee() != null){
+                BigDecimal previousGas = order.getGasFee();
+                order.setGasFee(previousGas.add(orderDto.getGasFee()));
+                Order order1 = orderRepository.save(order);
+                return orderMapper.toOrderDTO(order1);
+            }
+
             orderMapper.updateOrderFromOrderDto(order, orderDto);
 
             Order order1 = orderRepository.save(order);
@@ -224,6 +249,41 @@ public class OrderServiceImpl implements OrderService {
         List<Object[]> result = orderRepository.countOrdersPerMonth(year);
         return getLongs(result);
     }
+
+    @Override
+    public Page<OrderDto> getOrders(Status status, String name, LocalDateTime startDate, LocalDateTime endDate, int page, int size, String address) {
+        // Retrieve orders by status with pagination
+        Page<Order> ordersPage = orderRepository.findAllByStatus(status, PageRequest.of(page, size));
+
+        // Filter the orders by the date range, name, and verifyAddress if specified
+        List<Order> filteredOrders = ordersPage.getContent().stream()
+                .filter(order -> {
+                    boolean matchesName = (name == null || name.isBlank())
+                            || (order.getMetaData() != null && order.getMetaData().getName() != null
+                            && order.getMetaData().getName().toLowerCase().contains(name.toLowerCase()));
+
+                    LocalDateTime createAt = (order.getMetaData() != null) ? order.getMetaData().getCreateAt() : null;
+                    boolean isAfterStart = (startDate == null) || (createAt != null && !createAt.isBefore(startDate));
+                    boolean isBeforeEnd = (endDate == null) || (createAt != null && !createAt.isAfter(endDate));
+
+                    boolean matchesAddress = (address == null || address.isBlank())
+                            || (order.getVerifyAddress() != null && order.getVerifyAddress().toLowerCase().contains(address.toLowerCase()));
+
+                    return matchesName && isAfterStart && isBeforeEnd && matchesAddress;
+                })
+                .collect(Collectors.toList());
+
+        // Map the filtered orders to OrderDto
+        List<OrderDto> orderDtos = filteredOrders.stream()
+                .map(orderMapper::toOrderDTO)
+                .collect(Collectors.toList());
+
+        // Return the paginated result
+        return new PageImpl<>(orderDtos, ordersPage.getPageable(), ordersPage.getTotalElements());
+    }
+
+
+
 
 }
 

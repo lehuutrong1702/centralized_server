@@ -6,7 +6,12 @@ import com.example.centralized_server.dto.OrderDto;
 import com.example.centralized_server.dto.OrderRequest;
 import com.example.centralized_server.entity.Order;
 import com.example.centralized_server.entity.Status;
+import org.springframework.data.domain.Page;
 
+import com.google.type.DateTime;
+
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 public interface OrderService {
@@ -14,7 +19,7 @@ public interface OrderService {
     List<OrderDto> getAllOrdersByAddress(String address);
 
     List<OrderDto>  getAllOrders(String search );
-    List<OrderDto>  getOrdersByStatus(Status status);
+    List<OrderDto>  getOrdersByStatus(Status status, String name, LocalDateTime startDate, LocalDateTime endDate, String verifierAddress);
     OrderDto updateOrderStatus(Long id, Status status);
 
     OrderDto getByIdOrder(Long id);
@@ -33,5 +38,5 @@ public interface OrderService {
 
     public long[] getMonthlyOrderCount(int year);
 
-
+    Page<OrderDto> getOrders(Status status, String name, LocalDateTime startDate, LocalDateTime endDate, int page, int size, String address);
 }
