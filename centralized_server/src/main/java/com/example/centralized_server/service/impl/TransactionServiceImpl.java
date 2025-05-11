@@ -1,10 +1,12 @@
 package com.example.centralized_server.service.impl;
 
+import com.example.centralized_server.dto.OrderDto;
 import com.example.centralized_server.dto.SearchCriteria;
 import com.example.centralized_server.dto.TransactionDto;
 import com.example.centralized_server.dto.TransactionResponse;
 import com.example.centralized_server.entity.Order;
 import com.example.centralized_server.entity.Transaction;
+import com.example.centralized_server.entity.TransactionStatus;
 import com.example.centralized_server.entity.User;
 import com.example.centralized_server.exception.ResourceNotFoundException;
 import com.example.centralized_server.mapper.TransactionMapper;
@@ -14,6 +16,9 @@ import com.example.centralized_server.repository.UserRepository;
 import com.example.centralized_server.service.TransactionService;
 import com.example.centralized_server.utils.CustomSpecification;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -235,6 +240,100 @@ public class TransactionServiceImpl implements TransactionService {
         List<Object[]> result = transactionRepository.countTransactionsPerMonth((year));
         return getLongs(result);
     }
+    private boolean matchOrderName(Long orderId, String search) {
+        if (orderId == null || search == null || search.isBlank()) {
+            return false;
+        }
+        return orderRepository.findById(orderId)
+                .map(order -> {
+                    if (order.getMetaData() != null && order.getMetaData().getName() != null) {
+                        return order.getMetaData().getName().toLowerCase().contains(search.toLowerCase());
+                    }
+                    return false;
+                })
+                .orElse(false);
+    }
+
+    @Override
+    public Page<TransactionResponse> getTransactions(TransactionStatus transactionStatus, String search, LocalDateTime startDate, LocalDateTime endDate, int page, int size, String address) {
+        Page<Transaction> transactionsPage = transactionRepository.findAllByStatus(transactionStatus, address, PageRequest.of(page, size));
+        System.out.println("ddd ss " + transactionsPage.getContent().size());
+        List<Transaction> filteredTransactions = transactionsPage.getContent().stream()
+                .filter(transaction -> {
+                    boolean matchesSearch = (search == null || search.isBlank())
+                            || (transaction.getFromUserId() != null && transaction.getFromUserId().toString().contains(search))
+                            || (transaction.getToUserId() != null && transaction.getToUserId().toString().contains(search))
+                            || (matchOrderName(transaction.getOrderId(), search));
+
+                    boolean isAfterStart = (startDate == null)
+                            || (transaction.getCreateAt() != null && !transaction.getCreateAt().isBefore(startDate));
+                    boolean isBeforeEnd = (endDate == null)
+                            || (transaction.getCreateAt() != null && !transaction.getCreateAt().isAfter(endDate));
+
+                    boolean matchesAddress = (address == null || address.isBlank())
+                            || (transaction.getVerifyAddress() != null && transaction.getVerifyAddress().toLowerCase().contains(address.toLowerCase()));
+                    System.out.println("ddd" + matchesAddress);
+                    return matchesSearch && isAfterStart && isBeforeEnd && matchesAddress;
+                })
+                .collect(Collectors.toList());
+        List<TransactionResponse> responses = new ArrayList<>();
+
+        for(Transaction transaction : filteredTransactions){
+
+            Optional<User> fromUser = userRepository.findById(transaction.getFromUserId());
+            Optional<User> toUser = userRepository.findById(transaction.getToUserId());
+            Optional<Order> order = orderRepository.findById(transaction.getOrderId());
+            if (fromUser.isPresent() && toUser.isPresent() && order.isPresent()) {
+                TransactionResponse transactionResponse = new TransactionResponse(
+                        transaction.getId(),
+                        transaction.getOrderId(),
+                        fromUser.get().getAddress(),
+                        toUser.get().getAddress(),
+                        order.get().getVerifyAddress(),
+                        order.get().getMetaData().getName(),
+                        transaction.getPrice(),
+                        transaction.getStatus(),
+                        transaction.getCreateAt(),
+                        transaction.getUpdateAt()
+                );
+                responses.add(transactionResponse);
+            }
+        }
+
+
+
+        return new PageImpl<>(responses, transactionsPage.getPageable(), transactionsPage.getTotalElements());
+    }
+
+    @Override
+    public Long getSizeTransactions(TransactionStatus transactionStatus, String search, LocalDateTime startDate, LocalDateTime endDate, String address) {
+        List<Transaction> transactions = transactionRepository.findAll();
+
+        return transactions.stream()
+                .filter(transaction -> {
+                    boolean matchesStatus = (transactionStatus == null)
+                            || (transaction.getStatus() != null && transaction.getStatus().equals(transactionStatus));
+
+                    boolean matchesSearch = (search == null || search.isBlank())
+                            || (transaction.getFromUserId() != null && transaction.getFromUserId().toString().contains(search))
+                            || (transaction.getToUserId() != null && transaction.getToUserId().toString().contains(search))
+                            || (matchOrderName(transaction.getOrderId(), search));
+
+                    boolean isAfterStart = (startDate == null)
+                            || (transaction.getCreateAt() != null && !transaction.getCreateAt().isBefore(startDate));
+                    boolean isBeforeEnd = (endDate == null)
+                            || (transaction.getCreateAt() != null && !transaction.getCreateAt().isAfter(endDate));
+
+                    boolean matchesAddress = (address == null || address.isBlank())
+                            || (transaction.getVerifyAddress() != null && transaction.getVerifyAddress().toLowerCase().contains(address.toLowerCase()));
+
+                    return matchesStatus && matchesSearch && isAfterStart && isBeforeEnd && matchesAddress;
+                })
+                .count();
+    }
+
+
+
 
     static long[] getLongs(List<Object[]> result) {
         long[] transactionPerMonth = new long[12];

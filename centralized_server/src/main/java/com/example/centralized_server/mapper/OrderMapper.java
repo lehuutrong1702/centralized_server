@@ -3,10 +3,7 @@ package com.example.centralized_server.mapper;
 import com.example.centralized_server.dto.OrderDto;
 import com.example.centralized_server.entity.Order;
 
-import org.mapstruct.BeanMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.*;
 
 @Mapper(componentModel = "spring")
 public interface OrderMapper {
@@ -16,6 +13,13 @@ public interface OrderMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateOrderFromOrderDto(@MappingTarget Order order, OrderDto orderDto);
+
+    @AfterMapping
+    default void removeTrailingZeros(@MappingTarget OrderDto dto) {
+        if (dto.getGasFee() != null) {
+            dto.setGasFee(dto.getGasFee().stripTrailingZeros());
+        }
+    }
 
 //    Order toOrder(OrderDto orderDto, Order order);
 //

@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 
 @Table(name = "orders")
 @Entity
@@ -33,4 +35,7 @@ public class Order {
 
     @Column(name = "token_id", nullable = true)
     private Long tokenId;
+
+    @Column(name = "gas_fee", precision = 20, scale = 10, nullable = true)
+    private BigDecimal gasFee;
 }

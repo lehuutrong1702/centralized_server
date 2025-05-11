@@ -5,11 +5,14 @@ import com.example.centralized_server.entity.Order;
 import com.example.centralized_server.entity.Status;
 import com.example.centralized_server.service.OrderService;
 import com.example.centralized_server.service.UserService;
+import com.google.type.DateTime;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -25,13 +28,9 @@ public class OrderController {
         orderService.createOrder(orderRequest);
         return ResponseEntity.ok().build();
     }
-//
-//    @GetMapping()
-//    public ResponseEntity<List<OrderDto>> getAllCopyright() {
-//        List<OrderDto> orders = orderService.getAllOrders();
-//        return ResponseEntity.ok(orders);
-//    }
-//
+
+
+
 
 
     @GetMapping()
@@ -88,4 +87,44 @@ public class OrderController {
             return ResponseEntity.ok(orderService.getMonthlyOrderCount(LocalDateTime.now().getYear()));
 
         }
+
+
+
+
+
+    @GetMapping("/getCopyrights")
+    public ResponseEntity<Page<OrderDto>> getOrders(
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) Status status,
+            @RequestParam(required = false) LocalDateTime startDate,
+            @RequestParam(required = false) LocalDateTime endDate,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String verifierAddress
+    ) {
+        if(status == null){
+            Page<OrderDto> orders = orderService.getOrders(Status.PUBLISHED, search, startDate, endDate, page - 1, size, verifierAddress);
+            return ResponseEntity.ok(orders);
+        }
+        else{
+            Page<OrderDto> orders = orderService.getOrders(status, search, startDate, endDate, page - 1, size, verifierAddress);
+            return ResponseEntity.ok(orders);
+        }
+
+    }
+
+
+    @GetMapping("/copyright-publish")
+    public ResponseEntity<Long> getAllCopyright(@RequestParam(required = false) String search,
+                                                @RequestParam(required = false) LocalDateTime startDate,
+                                                @RequestParam(required = false) LocalDateTime endDate,
+                                                @RequestParam(required = false) Status status,
+                                                @RequestParam(required = false) String verifierAddress) {
+        List<OrderDto> orders = orderService.getOrdersByStatus(status, search, startDate, endDate, verifierAddress);
+        return ResponseEntity.ok(Long.valueOf(orders.size()));
+    }
+
+
+
+
 }

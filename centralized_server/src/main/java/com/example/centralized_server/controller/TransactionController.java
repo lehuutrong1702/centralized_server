@@ -5,8 +5,11 @@ import com.example.centralized_server.dto.OrderDto;
 import com.example.centralized_server.dto.OrderRequest;
 import com.example.centralized_server.dto.TransactionDto;
 import com.example.centralized_server.dto.TransactionResponse;
+import com.example.centralized_server.entity.Status;
+import com.example.centralized_server.entity.TransactionStatus;
 import com.example.centralized_server.service.TransactionService;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -73,5 +76,33 @@ public class TransactionController {
     public ResponseEntity<long[]> count() {
         return ResponseEntity.ok(transactionService.getMonthlyTransactionsCount(LocalDateTime.now().getYear()));
 
+    }
+
+
+    @GetMapping("/getCopyrightTransfers")
+    public ResponseEntity<Page<TransactionResponse>> getCopyrightTransfers(
+            @RequestParam(required = false) TransactionStatus transactionStatus,
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) LocalDateTime startDate,
+            @RequestParam(required = false) LocalDateTime endDate,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String verifierAddress
+    ) {
+        System.out.println(verifierAddress);
+        Page<TransactionResponse> orders = transactionService.getTransactions(transactionStatus, search, startDate, endDate, page - 1, size, verifierAddress);
+        return ResponseEntity.ok(orders);
+
+    }
+
+
+    @GetMapping("/getSizeCopyrightTransfer")
+    public ResponseEntity<Long> getAllCopyright(
+            @RequestParam(required = false) TransactionStatus transactionStatus,
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) LocalDateTime startDate,
+            @RequestParam(required = false) LocalDateTime endDate,
+            @RequestParam(required = false) String verifierAddress) {
+        return ResponseEntity.ok(transactionService.getSizeTransactions(transactionStatus, search, startDate,endDate,verifierAddress));
     }
 }
